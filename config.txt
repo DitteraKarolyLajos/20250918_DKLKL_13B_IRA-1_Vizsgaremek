@@ -1,0 +1,654 @@
+-----IBM_CNTRL
+
+VLSM - 192.168.33.0/24
+VLAN5 - WRKFRC1 - 192.168.30.0/26
+VLAN10 - WRKFRC2 - 192.168.30.64/26
+VLAN15 - HGHRPS - 192.168.30.128/27
+VLAN20 - ADMIN - 192.168.30.160/27
+xxxxxx - SRVRS - 192.168.30.192/28
+xxxxxx - BTWNNRTRS - 192.168.30.208/30
+xxxxxx - OUTSIDE - 80.90.125.32/30
+
+-x-IBM_CNTRL_RTR0
+en
+conf t
+hostname IBM_CNTRL_RTR0
+int gig0/2/0
+ip add 80.90.125.33 255.255.255.252
+exit
+int gig0/1/0
+ip add 192.168.30.209 255.255.255.252
+no sh
+exit
+int gig0/0/0.5
+encapsulation dot1q 5
+ip add 192.168.30.1 255.255.255.192
+ip helper-address 192.68.30.197
+no sh
+exit
+int gig0/0/0.10
+encapsulation dot1q 10
+ip add 192.168.30.65 255.255.255.192
+ip helper-address 192.68.30.197
+no sh
+exit
+int gig0/0/0.15
+encapsulation dot1q 15
+ip add 192.168.30.129 255.255.255.224
+ip helper-address 192.68.30.197
+no sh
+exit
+int gig0/0/0.20
+encapsulation dot1q 20 native
+ip add 192.168.30.161 255.255.255.224
+no sh
+exit
+route ospf 1
+router-id 10.10.10.10
+Network 192.168.30.0 0.0.0.63 area 0
+Network 192.168.30.64 0.0.0.63 area 0
+Network 192.168.30.128 0.0.0.31 area 0
+Network 192.168.30.160 0.0.0.31 area 0
+Network 192.168.30.208 0.0.0.3 area 0
+Network 80.90.125.0 0.0.0.3 area 0
+passive-interface gig0/0/0.5
+passive-interface gig0/0/0.10
+passive-interface gig0/0/0.15
+passive-interface gig0/0/0.20
+exit
+ip domain-name IBM.com
+enpass leaper33
+user IBMadmin password ibmadmin34
+user IBMpnsadmin password projectenis375
+crypto key generate rsa
+1024
+
+ip ssh version 2
+do wr
+
+-x- IBM_CNTRL_RTR1
+en
+conf t
+hostname IBM_CNTRL_RTR1
+int gig0/1/0
+ip add 192.168.30.210 255.255.255.252
+no sh
+exit
+int gig0/0
+ip add 192.168.30.193 255.255.255.240
+no sh
+exit
+router ospf 1
+router-id 9.9.9.9
+Network 192.168.30.192 0.0.0.15 area 0
+Network 192.168.30.208 0.0.0.3 area 0
+passive-interface gig0/0
+exit
+ip domain-name IBM.com
+enpass leaper25
+user IBMadmin password ibmadmin34
+user srvrmanager password srvr
+crypto key generate rsa
+1024
+
+ip ssh version 2
+do wr
+
+-x-IBM_CNTRL_MLTLYRS0
+en
+conf t
+hostname IBM_CNTRL_MLTLYRS0
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+ip add 192.168.30.162 255.255.255.224
+no sh
+exit
+int range gig1/1/1, gig1/0/23-24
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+vtp domain IBMVTP.com
+vtp version 2
+vtp mode server
+ip default-gateway 192.168.30.161
+ip domain-name IBM.com
+enpass cdat021
+user IBMadmin password IBMadmin34
+user IBMpnsadmin password projectenis375
+crypto key generate rsa
+1024
+
+ip ssh version 2
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_S0
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_S0
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+ip add 192.168.30.163 255.255.255.224
+no sh
+exit
+int range gig0/1, fa0/21-24
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+vtp domain IBMVTP.com
+vtp version 2
+vtp mode server
+ip default-gateway 192.168.30.161
+ip domain-name IBM.com
+enpass tadc529
+user IBMadmin password IBMadmin34
+user IBMpnsadmin password projectenis375
+crypto key generate rsa
+1024
+
+ip ssh version 2
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_S1
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_S1
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+ip add 192.168.30.164 255.255.255.224
+no sh
+exit
+int range gig0/1, fa0/21-24
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+vtp domain IBMVTP.com
+vtp version 2
+vtp mode server
+ip default-gateway 192.168.30.161
+ip domain-name IBM.com
+enpass tadc529
+user IBMadmin password IBMadmin34
+user IBMpnsadmin password projectenis375
+crypto key generate rsa
+1024
+
+ip ssh version 2
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_S2
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_S2
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+ip add 192.168.30.165 255.255.255.224
+no sh
+exit
+int range fa0/21-24
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+int range fa0/11-15
+switchport mode Access
+switchport Access vlan 15
+no sh
+exit
+int range fa0/16-20
+switchport mode Access
+switchport Access vlan 20
+no sh
+exit
+vtp domain IBMVTP.com
+vtp version 2
+vtp mode client
+ip default-gateway 192.168.30.161
+ip domain-name IBM.com
+enpass tadc529
+user IBMadmin password IBMadmin34
+user IBMpnsadmin password projectenis375
+crypto key generate rsa
+1024
+
+ip ssh version 2
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_S3
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_S2
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+ip add 192.168.30.166 255.255.255.224
+no sh
+exit
+int range fa0/21-24
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+int range fa0/11-15
+switchport mode Access
+switchport Access vlan 15
+no sh
+exit
+int range fa0/16-20
+switchport mode Access
+switchport Access vlan 20
+no sh
+exit
+vtp domain IBMVTP.com
+vtp version 2
+vtp mode client
+ip default-gateway 192.168.30.161
+ip domain-name IBM.com
+enpass tadc529
+user IBMadmin password IBMadmin34
+user IBMpnsadmin password projectenis375
+crypto key generate rsa
+1024
+
+ip ssh version 2
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_S4
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_S4
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+ip add 192.168.30.167 255.255.255.224
+no sh
+exit
+int range fa0/21-24
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+int range fa0/1-5
+switchport mode Access
+switchport Access vlan 5
+no sh
+exit
+int range fa0/6-10
+switchport mode Access
+switchport Access vlan 10
+no sh
+exit
+int range fa0/11-15
+switchport mode Access
+switchport Access vlan 15
+no sh
+exit
+int range fa0/16-20
+switchport mode Access
+switchport Access vlan 20
+no sh
+exit
+vtp domain IBMVTP.com
+vtp version 2
+vtp mode client
+ip default-gateway 192.168.30.161
+ip domain-name IBM.com
+enpass tadc529
+user IBMadmin password IBMadmin34
+user IBMpnsadmin password projectenis375
+crypto key generate rsa
+1024
+
+ip ssh version 2
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_S5
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_S5
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+ip add 192.168.30.168 255.255.255.224
+no sh
+exit
+int range fa0/21-24
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+int range fa0/1-5
+switchport mode Access
+switchport Access vlan 5
+no sh
+exit
+int range fa0/6-10
+switchport mode Access
+switchport Access vlan 10
+no sh
+exit
+int range fa0/11-15
+switchport mode Access
+switchport Access vlan 15
+no sh
+exit
+int range fa0/16-20
+switchport mode Access
+switchport Access vlan 20
+no sh
+exit
+vtp domain IBMVTP.com
+vtp version 2
+vtp mode client
+ip default-gateway 192.168.30.161
+ip domain-name IBM.com
+enpass tadc529
+user IBMadmin password IBMadmin34
+user IBMpnsadmin password projectenis375
+crypto key generate rsa
+1024
+
+ip ssh version 2
+do wr
+
+-----ANDOR
+
+VLSM - 172.16.15.0/24
+VLAN3 - FRSTFLR - 172.16.15.0/26
+VLAN6 - SCNDFLR - 172.16.15.64/26
+VLAN9 - GRNDFLR - 172.16.15.128/27
+VLAN12 - ADMIN - 172.16.15.160/28
+xxxxxx - SOHO - 172.16.16.0/24
+xxxxxx - OUTSIDE - 80.90.125.36/32
+
+-x-ANDOR_R
+en
+conf t
+hostname ANDOR_R
+int gig0/3/0
+ip add 80.90.125.37 255.255.255.252
+no sh
+exit
+int gig0/1.3
+encapsulation dot1q 3
+ip add 172.16.15.1 255.255.255.192
+ip helper-address 192.168.30.197
+no sh
+exit
+int gig0/1.6
+encapsulation dot1q 6
+ip add 172.16.15.65 255.255.255.192
+ip helper-address 192.168.30.197
+no sh
+exit
+int gig0/1.9
+encapsulation dot1q 9
+ip add 172.16.15.129 255.255.255.224
+ip helper-address 192.168.30.197
+no sh
+exit
+int gig0/1.12
+encapsulation dot1q 12 native
+ip add 172.16.15.161 255.255.255.240
+no sh
+exit
+router ospf 1
+router-id 8.8.8.8
+Network 172.16.15.0 0.0.0.63 area 0
+Network 172.16.15.64 0.0.0.63 area 0
+Network 172.16.15.128 0.0.0.31 area 0
+Network 172.16.15.160 0.0.0.15 area 0
+Network 80.90.125.36 0.0.0.3 area 0
+passive-interface gig0/1.3
+passive-interface gig0/1.6
+passive-interface gig0/1.9
+passive-interface gig0/1.12
+exit
+ip domain-name ANDOR.com
+enpass wasp67
+user IBMadmin password ibmadmin34
+user IBMpnsadmin password projectenis375
+user IBMpnsandoradmin password andor729
+crypto key generate rsa
+1024
+
+ip ssh version 2
+do wr
+
+-x-ANDOR_S0
+en
+conf t
+hostname ANDOR_S0
+vlan 3
+name FRSTFLR
+exit
+vlan 6
+name SCNDFLR
+exit
+vlan 9
+name GRNDFLR
+exit
+vlan 12
+name ADMIN
+exit
+int vlan 12
+ip add 172.16.15.162 255.255.255.240
+no sh
+exit
+int fa0/24
+switchport mode trunk
+switchport trunk native vlan 12
+switchport allowed vlan 3,6,9,12
+no sh
+exit
+int range fa0/1-5
+switchport mode Access
+switchport Access vlan 12
+no sh
+exit
+int range fa0/6-23
+switchport mode Access
+switchport Access vlan 3
+no sh
+exit
+vtp domain ANDORVTP.com
+vtp version 2
+vtp mode client
+ip default-gateway 172.16.15.161
+ip domain-name ANDOR.com
+enpass kahg166
+user IBMadmin password ibmadmin34
+user IBMpnsadmin password projectenis375
+user IBMpnsandoradmin password andor729
+crypto key generate rsa
+1024
+
+ip ssh version 2
+do wr
+
+-x-ANDOR_S1
+en
+conf t
+hostname ANDOR_S1
+vlan 3
+name FRSTFLR
+exit
+vlan 6
+name SCNDFLR
+exit
+vlan 9
+name GRNDFLR
+exit
+vlan 12
+name ADMIN
+exit
+int vlan 12
+ip add 172.16.15.163 255.255.255.240
+no sh
+exit
+int range gig0/1, fa0/23-24
+switchport mode trunk
+switchport trunk native vlan 12
+switchport allowed vlan 3,6,9,12
+no sh
+exit
+int range fa0/1-6
+switchport mode Access
+switchport Access vlan 12
+no sh
+exit
+int range fa0/7-22
+switchport mode Access
+switchport Access vlan 9
+no sh
+exit
+vtp domain ANDORVTP.com
+vtp version 2
+vtp mode server
+ip default-gateway 172.16.15.161
+ip domain-name ANDOR.com
+enpass sfad694
+user IBMadmin password ibmadmin34
+user IBMpnsadmin password projectenis375
+user IBMpnsandoradmin password andor729
+crypto key generate rsa
+1024
+
+ip ssh version 2
+do wr
+
+-x-ANDOR_S2
+en
+conf t
+hostname ANDOR_S2
+vlan 3
+name FRSTFLR
+exit
+vlan 6
+name SCNDFLR
+exit
+vlan 9
+name GRNDFLR
+exit
+vlan 12
+name ADMIN
+exit
+int vlan 12
+ip add 172.16.15.164 255.255.255.240
+no sh
+exit
+int fa0/23
+switchport mode trunk
+switchport trunk native vlan 12
+switchport allowed vlan 3,6,9,12
+no sh
+exit
+int range fa0/1-6
+switchport mode Access
+switchport Access vlan 12
+no sh
+exit
+int range fa0/7-22
+switchport mode Access
+switchport Access vlan 9
+no sh
+exit
+vtp domain ANDORVTP.com
+vtp version 2
+vtp mode client
+ip default-gateway 172.16.15.161
+ip domain-name ANDOR.com
+enpass drhj712
+user IBMadmin password ibmadmin34
+user IBMpnsadmin password projectenis375
+user IBMpnsandoradmin password andor729
+crypto key generate rsa
+1024
+
+ip ssh version 2
+do wr
+
+-x-
