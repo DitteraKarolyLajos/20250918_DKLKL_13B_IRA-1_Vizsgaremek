@@ -1,3 +1,4 @@
+DHCP Server address 192.168.30.197
 -----IBM_CNTRL
 
 VLSM - 192.168.33.0/24
@@ -23,19 +24,19 @@ exit
 int gig0/0/0.5
 encapsulation dot1q 5
 ip add 192.168.30.1 255.255.255.192
-ip helper-address 192.68.30.197
+ip helper-address 192.168.30.197
 no sh
 exit
 int gig0/0/0.10
 encapsulation dot1q 10
 ip add 192.168.30.65 255.255.255.192
-ip helper-address 192.68.30.197
+ip helper-address 192.168.30.197
 no sh
 exit
 int gig0/0/0.15
 encapsulation dot1q 15
 ip add 192.168.30.129 255.255.255.224
-ip helper-address 192.68.30.197
+ip helper-address 192.168.30.197
 no sh
 exit
 int gig0/0/0.20
@@ -709,6 +710,7 @@ enable password enpass55
 ip domain-name ibmkun.com
 crypto key generate rsa
 1024
+
 ip ssh version 2
 line vty 0 15
 transport input ssh
@@ -745,7 +747,7 @@ int gig0/2
 switchport mode trunk 
 switchport trunk allowed vlan 10,20,30,40
 exit
-int vlan 1
+int vlan 10
 ip address 172.16.20.133 255.255.255.240
 no sh
 exit
@@ -755,6 +757,7 @@ enable password enpass55
 ip domain-name ibmkun.com
 crypto key generate rsa
 1024
+
 ip ssh version 2
 line vty 0 15
 transport input ssh
@@ -789,7 +792,7 @@ int fa0/1
 switchport mode access
 switchport access vlan 40
 exit
-int vlan 1
+int vlan 10
 ip address 172.16.20.134 255.255.255.240
 no sh
 exit
@@ -799,6 +802,7 @@ enable password enpass55
 ip domain-name ibmkun.com
 crypto key generate rsa
 1024
+
 ip ssh version 2
 line vty 0 15
 transport input ssh
@@ -833,7 +837,7 @@ int fa0/1
 switchport mode access
 switchport access vlan 40
 exit
-int vlan 1
+int vlan 10
 ip address 172.16.20.135 255.255.255.240
 no sh
 exit
@@ -843,6 +847,7 @@ enable password enpass55
 ip domain-name ibmkun.com
 crypto key generate rsa
 1024
+
 ip ssh version 2
 line vty 0 15
 transport input ssh
@@ -879,7 +884,7 @@ int fa0/20
 switchport mode trunk
 switchport trunk allowed vlan 10,20,30,40
 exit
-int vlan 1
+int vlan 10
 ip address 172.16.20.131 255.255.255.240
 no sh
 exit
@@ -889,6 +894,7 @@ enable password enpass55
 ip domain-name ibmkun.com
 crypto key generate rsa
 1024
+
 ip ssh version 2
 line vty 0 15
 transport input ssh
@@ -911,7 +917,7 @@ ISP_RF1
 en
 conf t
 hostname ISP_RF1
-int gig0/2
+int gig0/3/0
 ip address 80.90.125.49 255.255.255.252
 no sh
 exit
@@ -919,19 +925,15 @@ int gig0/0
 ip address 80.90.125.46 255.255.255.252
 no sh
 exit
-int gig0/1
+int gig0/2/0
 ip address 80.90.125.53 255.255.255.252
 no sh
 exit
-router ospf 1 
+router ospf 1
+router-id 14.14.14.14
 network 80.90.125.48 0.0.0.3
 network 80.90.125.52 0.0.0.3
-passive-interface gig0/0.10
-passive-interface gig0/0.20
-passive-interface gig0/0.30
-passive-interface gig0/0.40
-passive-interface gig0/0
-default-information originate
+Network 80.90.125.44 0.0.0.3
 exit
 do write
 
@@ -943,7 +945,7 @@ en
 conf t
 hostname R1_F1
 router ospf 1 
-router-id 100.100.100.100
+router-id 7.7.7.7
 network 172.16.10.0 0.0.0.63
 network 172.16.10.64 0.0.0.63
 network 172.16.10.128 0.0.0.15
@@ -984,7 +986,7 @@ standby 4 ip 172.16.10.149
 standby 4 preempt
 standby 4 priority 120
 exit
-int gig0/2
+int gig0/2/0
 ip address 80.90.125.50 255.255.255.252
 no sh
 exit
@@ -1000,6 +1002,7 @@ enable password enpass55
 ip domain-name ibmf1.com
 crypto key generate rsa
 1024
+
 ip ssh version 2
 line vty 0 15
 transport input ssh
@@ -1015,7 +1018,7 @@ en
 conf t
 hostname R2_F1
 router ospf 1 
-router-id 100.100.100.100
+router-id 6.6.6.6
 network 172.16.10.0 0.0.0.63
 network 172.16.10.64 0.0.0.63
 network 172.16.10.128 0.0.0.15
@@ -1033,30 +1036,30 @@ encapsulation dot1Q 10 native
 ip address 127.16.10.142 255.255.255.240
 standby 1 ip 172.16.10.129
 standby 1 preempt
-standby 1 priority 120
+standby 1 priority 110
 exit
 int gig0/0.20
 encapsulation dot1Q 20
 ip address 127.16.10.62 255.255.255.192
 standby 2 ip 172.16.10.1
 standby 2 preempt
-standby 2 priority 120
+standby 2 priority 110
 exit
 int gig0/0.30
 encapsulation dot1Q 30
 ip address 127.16.10.126 255.255.255.192
 standby 3 ip 172.16.10.65
 standby 3 preempt
-standby 3 priority 120
+standby 3 priority 110
 exit
 int gig0/0.40
 encapsulation dot1Q 40
 ip address 127.16.10.158 255.255.255.240
 standby 4 ip 172.16.10.149
 standby 4 preempt
-standby 4 priority 120
+standby 4 priority 110
 exit
-int gig0/2
+int gig0/2/0
 ip address 80.90.125.54 255.255.255.252
 no sh
 exit
@@ -1072,6 +1075,7 @@ enable password enpass55
 ip domain-name ibmf1.com
 crypto key generate rsa
 1024
+
 ip ssh version 2
 line vty 0 15
 transport input ssh
@@ -1081,7 +1085,7 @@ do write
 
 
 ------------------------
-SW_KF1_A
+SW_F1_A
 
 en
 conf t
@@ -1104,9 +1108,12 @@ vtp password ibmf1pa55
 vtp version 2
 int gig0/1
 switchport mode trunk
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
+switchport nonegotiate
+no sh
 exit
-int vlan 1
+int vlan 10
 ip address 172.16.10.131 255.255.255.240
 no sh
 exit
@@ -1116,6 +1123,7 @@ enable password enpass55
 ip domain-name ibmf1.com
 crypto key generate rsa
 1024
+
 ip ssh version 2
 line vty 0 15
 transport input ssh
@@ -1163,7 +1171,7 @@ int fa0/1
 switchport mode access
 switchport access vlan 40
 exit
-int vlan 1
+int vlan 10
 ip address 172.16.10.133 255.255.255.240
 no sh
 exit
@@ -1173,6 +1181,7 @@ enable password enpass55
 ip domain-name ibmf1.com
 crypto key generate rsa
 1024
+
 ip ssh version 2
 line vty 0 15
 transport input ssh
@@ -1216,7 +1225,7 @@ int fa0/1
 switchport mode access
 switchport access vlan 40
 exit
-int vlan 1
+int vlan 10
 ip address 172.16.10.134 255.255.255.240
 no sh
 exit
@@ -1226,6 +1235,7 @@ enable password enpass55
 ip domain-name ibmf1.com
 crypto key generate rsa
 1024
+
 ip ssh version 2
 line vty 0 15
 transport input ssh
@@ -1275,6 +1285,7 @@ enable password enpass55
 ip domain-name ibmf1.com
 crypto key generate rsa
 1024
+
 ip ssh version 2
 line vty 0 15
 transport input ssh
@@ -1313,7 +1324,7 @@ int fa0/1
 switchport mode access
 switchport access vlan 40
 exit
-int vlan 1
+int vlan 10
 ip address 172.16.10.136 255.255.255.240
 no sh
 exit
@@ -1323,6 +1334,7 @@ enable password enpass55
 ip domain-name ibmf1.com
 crypto key generate rsa
 1024
+
 ip ssh version 2
 line vty 0 15
 transport input ssh
@@ -1330,7 +1342,6 @@ login local
 exit
 spanning-tree vlan 20 priority 4096
 do write
-
 
 
 
