@@ -1,4 +1,5 @@
 DHCP Server address 192.168.30.197
+DNS Server address 192.168.30.196
 -----IBM_CNTRL
 
 VLSM - 192.168.33.0/24
@@ -65,6 +66,10 @@ crypto key generate rsa
 1024
 
 ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+exit
 do wr
 
 -x- IBM_CNTRL_RTR1
@@ -93,6 +98,10 @@ crypto key generate rsa
 1024
 
 ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+exit
 do wr
 
 -x-IBM_CNTRL_MLTLYRS0
@@ -133,6 +142,10 @@ crypto key generate rsa
 1024
 
 ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+exit
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_S0
@@ -173,6 +186,10 @@ crypto key generate rsa
 1024
 
 ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+exit
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_S1
@@ -213,6 +230,10 @@ crypto key generate rsa
 1024
 
 ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+exit
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_S2
@@ -263,6 +284,12 @@ crypto key generate rsa
 1024
 
 ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+exit
+spanning-tree vlan 5 priority 0
+spanning-tree vlan 10 priority 4096
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_S3
@@ -313,6 +340,12 @@ crypto key generate rsa
 1024
 
 ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+exit
+spanning-tree vlan 15 priority 0
+spanning-tree vlan 20 priority 4096
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_S4
@@ -373,6 +406,12 @@ crypto key generate rsa
 1024
 
 ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+exit
+spanning-tree vlan 20 priority 0
+spanning-tree vlan 15 priority 4096
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_S5
@@ -433,6 +472,12 @@ crypto key generate rsa
 1024
 
 ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+exit
+spanning-tree vlan 10 priority 0
+spanning-tree vlan 5 priority 4096
 do wr
 
 -----ANDOR
@@ -497,6 +542,10 @@ crypto key generate rsa
 1024
 
 ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+exit
 do wr
 
 -x-ANDOR_S0
@@ -548,6 +597,12 @@ crypto key generate rsa
 1024
 
 ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+exit
+spanning-tree vlan 3 priority 0
+spanning-tree vlan 9 priority 4096
 do wr
 
 -x-ANDOR_S1
@@ -599,6 +654,13 @@ crypto key generate rsa
 1024
 
 ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+exit
+spanning-tree vlan 9 priority 0
+spanning-tree vlan 12 priority 4096
+spanning-tree vlan 6 priority 4096
 do wr
 
 -x-ANDOR_S2
@@ -650,6 +712,13 @@ crypto key generate rsa
 1024
 
 ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+exit
+spanning-tree vlan 12 priority 0
+spanning-tree vlan 6 priority 0
+spanning-tree vlan 3 priority 4096
 do wr
 
 -x-
@@ -664,6 +733,19 @@ R_KUN
 en
 conf t
 hostname R_KUN
+router ospf 1 
+router-id 3.3.3.3
+network 172.16.20.0 0.0.0.63 area 0
+network 172.16.20.64 0.0.0.63 area 0
+network 172.16.20.128 0.0.0.15 area 0
+network 172.16.20.144 0.0.0.7 area 0
+network 80.90.125.40 0.0.0.3 area 0
+passive-interface gig0/2.10
+passive-interface gig0/2.20
+passive-interface gig0/2.30
+passive-interface gig0/2.40
+passive-interface gig0/0
+exit
 int gig0/2.10
 encapsulation dot1Q 10 native
 ip address 127.16.20.129 255.255.255.240
@@ -732,19 +814,23 @@ vtp version 2
 int range fa 0/21-22
 channel-group 1 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa 0/23-24
 channel-group 3 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int fa0/20
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int gig0/2
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int vlan 10
@@ -781,16 +867,26 @@ vtp version 2
 int range fa 0/21-22
 channel-group 1 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa 0/19-20
 channel-group 2 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int fa0/1
 switchport mode access
 switchport access vlan 40
+exit
+int range fa0/2-9
+switchport mode access
+switchport access vlan 20
+exit
+int range fa0/10-18
+switchport mode access
+switchport access vlan 30
 exit
 int vlan 10
 ip address 172.16.20.134 255.255.255.240
@@ -826,16 +922,26 @@ vtp version 2
 int range fa 0/19-20
 channel-group 2 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa 0/23-24
 channel-group 3 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int fa0/1
 switchport mode access
 switchport access vlan 40
+exit
+int range fa0/2-9
+switchport mode access
+switchport access vlan 20
+exit
+int range fa0/10-18
+switchport mode access
+switchport access vlan 30
 exit
 int vlan 10
 ip address 172.16.20.135 255.255.255.240
@@ -882,6 +988,7 @@ vtp password ibmkunpa55
 vtp version 2
 int fa0/20
 switchport mode trunk
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int vlan 10
@@ -910,34 +1017,6 @@ do write
 F1
 
 
-
---------------------------------
-ISP_RF1
-
-en
-conf t
-hostname ISP_RF1
-int gig0/3/0
-ip address 80.90.125.49 255.255.255.252
-no sh
-exit
-int gig0/0
-ip address 80.90.125.46 255.255.255.252
-no sh
-exit
-int gig0/2/0
-ip address 80.90.125.53 255.255.255.252
-no sh
-exit
-router ospf 1
-router-id 14.14.14.14
-network 80.90.125.48 0.0.0.3
-network 80.90.125.52 0.0.0.3
-Network 80.90.125.44 0.0.0.3
-exit
-do write
-
-
 --------------------------------
 R1_F1
 
@@ -946,12 +1025,12 @@ conf t
 hostname R1_F1
 router ospf 1 
 router-id 7.7.7.7
-network 172.16.10.0 0.0.0.63
-network 172.16.10.64 0.0.0.63
-network 172.16.10.128 0.0.0.15
-network 172.16.10.144 0.0.0.15
-network 172.16.10.160 0.0.0.3
-network 80.90.125.48 0.0.0.3
+network 172.16.10.0 0.0.0.63 area 0
+network 172.16.10.64 0.0.0.63 area 0
+network 172.16.10.128 0.0.0.15 area 0
+network 172.16.10.144 0.0.0.15 area 0
+network 172.16.10.160 0.0.0.3 area 0
+network 80.90.125.48 0.0.0.3 area 0
 passive-interface gig0/0.10
 passive-interface gig0/0.20
 passive-interface gig0/0.30
@@ -964,6 +1043,7 @@ ip address 127.16.10.141 255.255.255.240
 standby 1 ip 172.16.10.129
 standby 1 preempt
 standby 1 priority 120
+ip helper-address 192.168.30.197
 exit
 int gig0/0.20
 encapsulation dot1Q 20
@@ -971,6 +1051,7 @@ ip address 127.16.10.61 255.255.255.192
 standby 2 ip 172.16.10.1
 standby 2 preempt
 standby 2 priority 120
+ip helper-address 192.168.30.197
 exit
 int gig0/0.30
 encapsulation dot1Q 30
@@ -978,6 +1059,7 @@ ip address 127.16.10.125 255.255.255.192
 standby 3 ip 172.16.10.65
 standby 3 preempt
 standby 3 priority 120
+ip helper-address 192.168.30.197
 exit
 int gig0/0.40
 encapsulation dot1Q 40
@@ -985,6 +1067,7 @@ ip address 127.16.10.157 255.255.255.240
 standby 4 ip 172.16.10.149
 standby 4 preempt
 standby 4 priority 120
+ip helper-address 192.168.30.197
 exit
 int gig0/2/0
 ip address 80.90.125.50 255.255.255.252
@@ -1019,12 +1102,12 @@ conf t
 hostname R2_F1
 router ospf 1 
 router-id 6.6.6.6
-network 172.16.10.0 0.0.0.63
-network 172.16.10.64 0.0.0.63
-network 172.16.10.128 0.0.0.15
-network 172.16.10.144 0.0.0.15
-network 172.16.10.160 0.0.0.3
-network 80.90.125.52 0.0.0.3
+network 172.16.10.0 0.0.0.63 area 0
+network 172.16.10.64 0.0.0.63 area 0
+network 172.16.10.128 0.0.0.15 area 0
+network 172.16.10.144 0.0.0.15 area 0
+network 172.16.10.160 0.0.0.3 area 0
+network 80.90.125.52 0.0.0.3 area 0
 passive-interface gig0/0.10
 passive-interface gig0/0.20
 passive-interface gig0/0.30
@@ -1037,6 +1120,7 @@ ip address 127.16.10.142 255.255.255.240
 standby 1 ip 172.16.10.129
 standby 1 preempt
 standby 1 priority 110
+ip helper-address 192.168.30.197
 exit
 int gig0/0.20
 encapsulation dot1Q 20
@@ -1044,6 +1128,7 @@ ip address 127.16.10.62 255.255.255.192
 standby 2 ip 172.16.10.1
 standby 2 preempt
 standby 2 priority 110
+ip helper-address 192.168.30.197
 exit
 int gig0/0.30
 encapsulation dot1Q 30
@@ -1051,6 +1136,7 @@ ip address 127.16.10.126 255.255.255.192
 standby 3 ip 172.16.10.65
 standby 3 preempt
 standby 3 priority 110
+ip helper-address 192.168.30.197
 exit
 int gig0/0.40
 encapsulation dot1Q 40
@@ -1058,6 +1144,7 @@ ip address 127.16.10.158 255.255.255.240
 standby 4 ip 172.16.10.149
 standby 4 preempt
 standby 4 priority 110
+ip helper-address 192.168.30.197
 exit
 int gig0/2/0
 ip address 80.90.125.54 255.255.255.252
@@ -1147,29 +1234,42 @@ vtp version 2
 int range fa0/23-24
 channel-group 1 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa0/21-22
 channel-group 4 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa0/19-20
 channel-group 5 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa0/17-18
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int gig0/1
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int fa0/1
 switchport mode access
 switchport access vlan 40
+exit
+int range fa0/2-9
+switchport mode access
+switchport access vlan 20
+exit
+int range fa0/10-18
+switchport mode access
+switchport access vlan 30
 exit
 int vlan 10
 ip address 172.16.10.133 255.255.255.240
@@ -1205,25 +1305,37 @@ vtp version 2
 int range fa0/23-24
 channel-group 1 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa0/21-22
 channel-group 2 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa0/19-20
 channel-group 6 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa0/17-18
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int fa0/1
 switchport mode access
 switchport access vlan 40
+exit
+int range fa0/2-9
+switchport mode access
+switchport access vlan 20
+exit
+int range fa0/10-18
+switchport mode access
+switchport access vlan 30
 exit
 int vlan 10
 ip address 172.16.10.134 255.255.255.240
@@ -1259,21 +1371,32 @@ vtp version 2
 int range fa0/23-24
 channel-group 3 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa0/21-22
 channel-group 2 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa0/19-20
 channel-group 5 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int fa0/1
 switchport mode access
 switchport access vlan 40
+exit
+int range fa0/2-9
+switchport mode access
+switchport access vlan 20
+exit
+int range fa0/10-18
+switchport mode access
+switchport access vlan 30
 exit
 int vlan 1
 ip address 172.16.10.135 255.255.255.240
@@ -1308,21 +1431,32 @@ vtp version 2
 int range fa0/23-24
 channel-group 3 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa0/21-22
 channel-group 4 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa0/19-20
 channel-group 6 mode desirable
 switchport mode trunk 
+switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int fa0/1
 switchport mode access
 switchport access vlan 40
+exit
+int range fa0/2-9
+switchport mode access
+switchport access vlan 20
+exit
+int range fa0/10-18
+switchport mode access
+switchport access vlan 30
 exit
 int vlan 10
 ip address 172.16.10.136 255.255.255.240
@@ -1345,9 +1479,106 @@ do write
 
 
 
+-------------------------------------------------------------------
+ISP
+
+------------------------
+MAIN_ISP
+
+hostname MAIN_ISP
+int gig0/1/0
+ip address 80.90.125.34 255.255.255.252
+no sh
+exit
+int gig0/2/0
+ip address 80.90.125.37 255.255.255.252
+no sh
+exit
+int gig0/3/0
+ip address 80.90.125.41 255.255.255.252
+no sh
+exit
+int gig0/0
+ip address 80.90.125.45 255.255.255.252
+no sh
+exit
+int gig0/1
+ip address 80.90.125.57
+no sh
+exit
+ip dhcp excluded-address 80.90.125.57
+ip dhcp pool IBM_TAV
+network 80.90.125.56 255.255.255.252
+router-address 80.90.125.57
+dns-server 192.168.30.196
+exit
+router ospf 1
+router-id 200.200.200.200
+network 80.90.125.44 0.0.0.3
+network 80.90.125.32 0.0.0.3
+network 80.90.125.36 0.0.0.3
+network 80.90.125.40 0.0.0.3
+network 80.90.125.56 0.0.0.3
+exit
+do write
+
+
+--------------------------------
+ISP_RF1
+
+en
+conf t
+hostname ISP_RF1
+int gig0/3/0
+ip address 80.90.125.49 255.255.255.252
+no sh
+exit
+int gig0/0
+ip address 80.90.125.46 255.255.255.252
+no sh
+exit
+int gig0/2/0
+ip address 80.90.125.53 255.255.255.252
+no sh
+exit
+router ospf 1
+router-id 14.14.14.14
+network 80.90.125.48 0.0.0.3
+network 80.90.125.52 0.0.0.3
+Network 80.90.125.44 0.0.0.3
+exit
+do write
 
 
 
+-------------------------------------------------------------------
+Távmonkás
+
+------------------------
+R_TAV
+
+en
+conf t
+hostname R_TAV
+int vlan 1
+ip address 192.168.100.1 255.255.255.0
+ip nat inside
+no sh
+exit
+int gig0/0
+ip address dhcp
+ip nat outside
+no sh
+exit
+ip dhcp excluded-address 192.168.100.1
+ip dhcp pool TAVMUNKAS
+network 192.168.100.0 255.255.255.0
+default-router 192.168.100.1
+dns-server 192.168.30.196
+exit
+ip domain-name ibm.hu
+ip nat inside source list 1 interface gig0/0 overload
+do write
 
 
 
