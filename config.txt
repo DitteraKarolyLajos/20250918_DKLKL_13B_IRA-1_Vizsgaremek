@@ -17,6 +17,7 @@ conf t
 hostname IBM_CNTRL_RTR0
 int gig0/2/0
 ip add 80.90.125.33 255.255.255.252
+no sh
 exit
 int gig0/1/0
 ip add 192.168.30.209 255.255.255.252
@@ -45,21 +46,26 @@ encapsulation dot1q 20 native
 ip add 192.168.30.161 255.255.255.224
 no sh
 exit
-route ospf 1
+
+int gig0/0/0
+no sh
+exit
+
+router ospf 1
 router-id 10.10.10.10
 Network 192.168.30.0 0.0.0.63 area 0
 Network 192.168.30.64 0.0.0.63 area 0
 Network 192.168.30.128 0.0.0.31 area 0
 Network 192.168.30.160 0.0.0.31 area 0
 Network 192.168.30.208 0.0.0.3 area 0
-Network 80.90.125.0 0.0.0.3 area 0
+Network 80.90.125.32 0.0.0.3 area 0
 passive-interface gig0/0/0.5
 passive-interface gig0/0/0.10
 passive-interface gig0/0/0.15
 passive-interface gig0/0/0.20
 exit
 ip domain-name IBM.com
-enpass leaper33
+enable pass leaper33
 user IBMadmin password ibmadmin34
 user IBMpnsadmin password projectenis375
 crypto key generate rsa
@@ -91,7 +97,7 @@ Network 192.168.30.208 0.0.0.3 area 0
 passive-interface gig0/0
 exit
 ip domain-name IBM.com
-enpass leaper25
+enable pass leaper25
 user IBMadmin password ibmadmin34
 user srvrmanager password srvr
 crypto key generate rsa
@@ -135,7 +141,7 @@ vtp version 2
 vtp mode server
 ip default-gateway 192.168.30.161
 ip domain-name IBM.com
-enpass cdat021
+enable pass cdat021
 user IBMadmin password IBMadmin34
 user IBMpnsadmin password projectenis375
 crypto key generate rsa
@@ -179,7 +185,7 @@ vtp version 2
 vtp mode server
 ip default-gateway 192.168.30.161
 ip domain-name IBM.com
-enpass tadc529
+enable pass tadc529
 user IBMadmin password IBMadmin34
 user IBMpnsadmin password projectenis375
 crypto key generate rsa
@@ -223,7 +229,7 @@ vtp version 2
 vtp mode server
 ip default-gateway 192.168.30.161
 ip domain-name IBM.com
-enpass tadc529
+enable pass tadc529
 user IBMadmin password IBMadmin34
 user IBMpnsadmin password projectenis375
 crypto key generate rsa
@@ -263,13 +269,13 @@ switchport trunk allowed vlan 5,10,15,20
 no sh
 exit
 int range fa0/11-15
-switchport mode Access
-switchport Access vlan 15
+switchport mode access
+switchport access vlan 15
 no sh
 exit
 int range fa0/16-20
-switchport mode Access
-switchport Access vlan 20
+switchport mode access
+switchport access vlan 20
 no sh
 exit
 vtp domain IBMVTP.com
@@ -277,7 +283,7 @@ vtp version 2
 vtp mode client
 ip default-gateway 192.168.30.161
 ip domain-name IBM.com
-enpass tadc529
+enable pass tadc529
 user IBMadmin password IBMadmin34
 user IBMpnsadmin password projectenis375
 crypto key generate rsa
@@ -295,7 +301,7 @@ do wr
 -x-IBM_CNTRL_PRJCTPNS_S3
 en
 conf t
-hostname IBM_CNTRL_PRJCTPNS_S2
+hostname IBM_CNTRL_PRJCTPNS_S3
 vlan 5
 name WRKFRC1
 exit
@@ -319,13 +325,13 @@ switchport trunk allowed vlan 5,10,15,20
 no sh
 exit
 int range fa0/11-15
-switchport mode Access
-switchport Access vlan 15
+switchport mode access
+switchport access vlan 15
 no sh
 exit
 int range fa0/16-20
-switchport mode Access
-switchport Access vlan 20
+switchport mode access
+switchport access vlan 20
 no sh
 exit
 vtp domain IBMVTP.com
@@ -333,7 +339,7 @@ vtp version 2
 vtp mode client
 ip default-gateway 192.168.30.161
 ip domain-name IBM.com
-enpass tadc529
+enable pass tadc529
 user IBMadmin password IBMadmin34
 user IBMpnsadmin password projectenis375
 crypto key generate rsa
@@ -375,23 +381,23 @@ switchport trunk allowed vlan 5,10,15,20
 no sh
 exit
 int range fa0/1-5
-switchport mode Access
-switchport Access vlan 5
+switchport mode access
+switchport access vlan 5
 no sh
 exit
 int range fa0/6-10
-switchport mode Access
-switchport Access vlan 10
+switchport mode access
+switchport access vlan 10
 no sh
 exit
 int range fa0/11-15
-switchport mode Access
-switchport Access vlan 15
+switchport mode access
+switchport access vlan 15
 no sh
 exit
 int range fa0/16-20
-switchport mode Access
-switchport Access vlan 20
+switchport mode access
+switchport access vlan 20
 no sh
 exit
 vtp domain IBMVTP.com
@@ -399,7 +405,7 @@ vtp version 2
 vtp mode client
 ip default-gateway 192.168.30.161
 ip domain-name IBM.com
-enpass tadc529
+enable pass tadc529
 user IBMadmin password IBMadmin34
 user IBMpnsadmin password projectenis375
 crypto key generate rsa
@@ -441,23 +447,23 @@ switchport trunk allowed vlan 5,10,15,20
 no sh
 exit
 int range fa0/1-5
-switchport mode Access
-switchport Access vlan 5
+switchport mode access
+switchport access vlan 5
 no sh
 exit
 int range fa0/6-10
-switchport mode Access
-switchport Access vlan 10
+switchport mode access
+switchport access vlan 10
 no sh
 exit
 int range fa0/11-15
-switchport mode Access
-switchport Access vlan 15
+switchport mode access
+switchport access vlan 15
 no sh
 exit
 int range fa0/16-20
-switchport mode Access
-switchport Access vlan 20
+switchport mode access
+switchport access vlan 20
 no sh
 exit
 vtp domain IBMVTP.com
@@ -465,7 +471,7 @@ vtp version 2
 vtp mode client
 ip default-gateway 192.168.30.161
 ip domain-name IBM.com
-enpass tadc529
+enable pass tadc529
 user IBMadmin password IBMadmin34
 user IBMpnsadmin password projectenis375
 crypto key generate rsa
@@ -521,6 +527,9 @@ encapsulation dot1q 12 native
 ip add 172.16.15.161 255.255.255.240
 no sh
 exit
+int gig0/1
+no sh
+exit
 router ospf 1
 router-id 8.8.8.8
 Network 172.16.15.0 0.0.0.63 area 0
@@ -534,7 +543,7 @@ passive-interface gig0/1.9
 passive-interface gig0/1.12
 exit
 ip domain-name ANDOR.com
-enpass wasp67
+enable pass wasp67
 user IBMadmin password ibmadmin34
 user IBMpnsadmin password projectenis375
 user IBMpnsandoradmin password andor729
@@ -571,17 +580,17 @@ exit
 int fa0/24
 switchport mode trunk
 switchport trunk native vlan 12
-switchport allowed vlan 3,6,9,12
+switchport trunk allowed vlan 3,6,9,12
 no sh
 exit
 int range fa0/1-5
-switchport mode Access
-switchport Access vlan 12
+switchport mode access
+switchport access vlan 12
 no sh
 exit
 int range fa0/6-23
-switchport mode Access
-switchport Access vlan 3
+switchport mode access
+switchport access vlan 3
 no sh
 exit
 vtp domain ANDORVTP.com
@@ -589,7 +598,7 @@ vtp version 2
 vtp mode client
 ip default-gateway 172.16.15.161
 ip domain-name ANDOR.com
-enpass kahg166
+enable pass kahg166
 user IBMadmin password ibmadmin34
 user IBMpnsadmin password projectenis375
 user IBMpnsandoradmin password andor729
@@ -628,17 +637,17 @@ exit
 int range gig0/1, fa0/23-24
 switchport mode trunk
 switchport trunk native vlan 12
-switchport allowed vlan 3,6,9,12
+switchport trunk allowed vlan 3,6,9,12
 no sh
 exit
 int range fa0/1-6
-switchport mode Access
-switchport Access vlan 12
+switchport mode access
+switchport access vlan 12
 no sh
 exit
 int range fa0/7-22
-switchport mode Access
-switchport Access vlan 9
+switchport mode access
+switchport access vlan 9
 no sh
 exit
 vtp domain ANDORVTP.com
@@ -646,7 +655,7 @@ vtp version 2
 vtp mode server
 ip default-gateway 172.16.15.161
 ip domain-name ANDOR.com
-enpass sfad694
+enable pass sfad694
 user IBMadmin password ibmadmin34
 user IBMpnsadmin password projectenis375
 user IBMpnsandoradmin password andor729
@@ -686,17 +695,17 @@ exit
 int fa0/23
 switchport mode trunk
 switchport trunk native vlan 12
-switchport allowed vlan 3,6,9,12
+switchport trunk allowed vlan 3,6,9,12
 no sh
 exit
 int range fa0/1-6
-switchport mode Access
-switchport Access vlan 12
+switchport mode access
+switchport access vlan 12
 no sh
 exit
 int range fa0/7-22
-switchport mode Access
-switchport Access vlan 9
+switchport mode access
+switchport access vlan 9
 no sh
 exit
 vtp domain ANDORVTP.com
@@ -704,7 +713,7 @@ vtp version 2
 vtp mode client
 ip default-gateway 172.16.15.161
 ip domain-name ANDOR.com
-enpass drhj712
+enable pass drhj712
 user IBMadmin password ibmadmin34
 user IBMpnsadmin password projectenis375
 user IBMpnsandoradmin password andor729
@@ -748,19 +757,22 @@ passive-interface gig0/0
 exit
 int gig0/2.10
 encapsulation dot1Q 10 native
-ip address 127.16.20.129 255.255.255.240
+ip address 172.16.20.129 255.255.255.240
 exit
 int gig0/2.20
 encapsulation dot1Q 20
-ip address 127.16.20.1 255.255.255.192
+ip address 172.16.20.1 255.255.255.192
+ip helper-address 192.168.30.197
 exit
 int gig0/2.30
 encapsulation dot1Q 30
-ip address 127.16.20.65 255.255.255.192
+ip address 172.16.20.65 255.255.255.192
+ip helper-address 192.168.30.197
 exit
 int gig0/2.40
 encapsulation dot1Q 40
-ip address 127.16.20.145 255.255.255.248
+ip address 172.16.20.145 255.255.255.248
+ip helper-address 192.168.30.197
 exit
 int gig0/2
 no sh
@@ -1039,35 +1051,36 @@ passive-interface gig0/0
 exit
 int gig0/0.10
 encapsulation dot1Q 10 native
-ip address 127.16.10.141 255.255.255.240
+ip address 172.16.10.141 255.255.255.240
 standby 1 ip 172.16.10.129
 standby 1 preempt
 standby 1 priority 120
-ip helper-address 192.168.30.197
+no sh
 exit
 int gig0/0.20
 encapsulation dot1Q 20
-ip address 127.16.10.61 255.255.255.192
+ip address 172.16.10.61 255.255.255.192
 standby 2 ip 172.16.10.1
-standby 2 preempt
 standby 2 priority 120
 ip helper-address 192.168.30.197
+no sh
 exit
 int gig0/0.30
 encapsulation dot1Q 30
-ip address 127.16.10.125 255.255.255.192
+ip address 172.16.10.125 255.255.255.192
 standby 3 ip 172.16.10.65
-standby 3 preempt
 standby 3 priority 120
 ip helper-address 192.168.30.197
+no sh
 exit
 int gig0/0.40
 encapsulation dot1Q 40
-ip address 127.16.10.157 255.255.255.240
+ip address 172.16.10.157 255.255.255.240
 standby 4 ip 172.16.10.149
 standby 4 preempt
 standby 4 priority 120
 ip helper-address 192.168.30.197
+no sh
 exit
 int gig0/2/0
 ip address 80.90.125.50 255.255.255.252
@@ -1116,15 +1129,13 @@ passive-interface gig0/0
 exit
 int gig0/0.10
 encapsulation dot1Q 10 native
-ip address 127.16.10.142 255.255.255.240
+ip address 172.16.10.142 255.255.255.240
 standby 1 ip 172.16.10.129
-standby 1 preempt
 standby 1 priority 110
-ip helper-address 192.168.30.197
 exit
 int gig0/0.20
 encapsulation dot1Q 20
-ip address 127.16.10.62 255.255.255.192
+ip address 172.16.10.62 255.255.255.192
 standby 2 ip 172.16.10.1
 standby 2 preempt
 standby 2 priority 110
@@ -1132,7 +1143,7 @@ ip helper-address 192.168.30.197
 exit
 int gig0/0.30
 encapsulation dot1Q 30
-ip address 127.16.10.126 255.255.255.192
+ip address 172.16.10.126 255.255.255.192
 standby 3 ip 172.16.10.65
 standby 3 preempt
 standby 3 priority 110
@@ -1140,9 +1151,8 @@ ip helper-address 192.168.30.197
 exit
 int gig0/0.40
 encapsulation dot1Q 40
-ip address 127.16.10.158 255.255.255.240
+ip address 172.16.10.158 255.255.255.240
 standby 4 ip 172.16.10.149
-standby 4 preempt
 standby 4 priority 110
 ip helper-address 192.168.30.197
 exit
@@ -1200,6 +1210,10 @@ switchport trunk allowed vlan 10,20,30,40
 switchport nonegotiate
 no sh
 exit
+int range fa0/1-2
+switchport mode access
+switchport access vlan 10
+exit
 int vlan 10
 ip address 172.16.10.131 255.255.255.240
 no sh
@@ -1255,6 +1269,11 @@ switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int gig0/1
+switchport mode trunk 
+switchport trunk native vlan 10
+switchport trunk allowed vlan 10,20,30,40
+exit
+int gig0/2
 switchport mode trunk 
 switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
@@ -1321,6 +1340,11 @@ switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
 exit
 int range fa0/17-18
+switchport mode trunk 
+switchport trunk native vlan 10
+switchport trunk allowed vlan 10,20,30,40
+exit
+int gig0/2
 switchport mode trunk 
 switchport trunk native vlan 10
 switchport trunk allowed vlan 10,20,30,40
@@ -1398,7 +1422,7 @@ int range fa0/10-18
 switchport mode access
 switchport access vlan 30
 exit
-int vlan 1
+int vlan 10
 ip address 172.16.10.135 255.255.255.240
 no sh
 exit
@@ -1485,13 +1509,15 @@ ISP
 ------------------------
 MAIN_ISP
 
+en
+conf t
 hostname MAIN_ISP
 int gig0/1/0
 ip address 80.90.125.34 255.255.255.252
 no sh
 exit
 int gig0/2/0
-ip address 80.90.125.37 255.255.255.252
+ip address 80.90.125.38 255.255.255.252
 no sh
 exit
 int gig0/3/0
@@ -1503,22 +1529,22 @@ ip address 80.90.125.45 255.255.255.252
 no sh
 exit
 int gig0/1
-ip address 80.90.125.57
+ip address 80.90.125.57 255.255.255.252
 no sh
 exit
 ip dhcp excluded-address 80.90.125.57
 ip dhcp pool IBM_TAV
 network 80.90.125.56 255.255.255.252
-router-address 80.90.125.57
+default-router 80.90.125.57
 dns-server 192.168.30.196
 exit
 router ospf 1
 router-id 200.200.200.200
-network 80.90.125.44 0.0.0.3
-network 80.90.125.32 0.0.0.3
-network 80.90.125.36 0.0.0.3
-network 80.90.125.40 0.0.0.3
-network 80.90.125.56 0.0.0.3
+network 80.90.125.44 0.0.0.3 area 0
+network 80.90.125.32 0.0.0.3 area 0
+network 80.90.125.36 0.0.0.3 area 0
+network 80.90.125.40 0.0.0.3 area 0
+network 80.90.125.56 0.0.0.3 area 0
 exit
 do write
 
@@ -1529,7 +1555,7 @@ ISP_RF1
 en
 conf t
 hostname ISP_RF1
-int gig0/3/0
+int gig0/2/0
 ip address 80.90.125.49 255.255.255.252
 no sh
 exit
@@ -1537,15 +1563,15 @@ int gig0/0
 ip address 80.90.125.46 255.255.255.252
 no sh
 exit
-int gig0/2/0
+int gig0/3/0
 ip address 80.90.125.53 255.255.255.252
 no sh
 exit
 router ospf 1
 router-id 14.14.14.14
-network 80.90.125.48 0.0.0.3
-network 80.90.125.52 0.0.0.3
-Network 80.90.125.44 0.0.0.3
+network 80.90.125.48 0.0.0.3 area 0
+network 80.90.125.52 0.0.0.3 area 0
+Network 80.90.125.44 0.0.0.3 area 0
 exit
 do write
 
@@ -1568,6 +1594,7 @@ exit
 int gig0/0
 ip address dhcp
 ip nat outside
+access-list 1 permit 192.168.100.0 0.0.0.255
 no sh
 exit
 ip dhcp excluded-address 192.168.100.1
@@ -1578,6 +1605,7 @@ dns-server 192.168.30.196
 exit
 ip domain-name ibm.hu
 ip nat inside source list 1 interface gig0/0 overload
+access-list 1 permit 192.168.100.0 0.0.0.255
 do write
 
 
