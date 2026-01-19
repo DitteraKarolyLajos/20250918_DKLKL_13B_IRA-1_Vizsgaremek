@@ -2728,11 +2728,11 @@ ACL
 			remark A KUN telephelyen lévő adminisztratív eszközök felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the administrative devices trough the subinterface in KUN.
 			permit tcp host 192.168.30.172 any eq 22
 			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.136 any eq 22
+			permit tcp host 172.16.20.132 any eq 22
 			deny tcp any any eq 22
 			permit icmp host 192.168.30.172 any
 			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.20.136 any
+			permit icmp host 172.16.20.132 any
 			deny icmp any any
 			permit ip any any
 			exit
@@ -2744,11 +2744,11 @@ ACL
 			remark A KUN telephelyen lévő Linux csapat eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices inside the Linux team trough the subinterface in KUN.
 			permit tcp host 192.168.30.172 any eq 22
 			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.136 any eq 22
+			permit tcp host 172.16.20.132 any eq 22
 			deny tcp any any eq 22
 			permit icmp host 192.168.30.172 any
 			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.20.136 any
+			permit icmp host 172.16.20.132 any
 			deny icmp any any
 			permit ip any any
 			exit
@@ -2760,11 +2760,11 @@ ACL
 			remark A KUN telephelyen lévő Windows csapat eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices inside the Windows team trough the subinterface in KUN.
 			permit tcp host 192.168.30.172 any eq 22
 			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.136 any eq 22
+			permit tcp host 172.16.20.132 any eq 22
 			deny tcp any any eq 22
 			permit icmp host 192.168.30.172 any
 			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.20.136 any
+			permit icmp host 172.16.20.132 any
 			deny icmp any any
 			permit ip any any
 			exit
@@ -2776,11 +2776,11 @@ ACL
 			remark A KUN telephelyen lévő vezetőségnek az eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices of the management trough the subinterface in KUN.
 			permit tcp host 192.168.30.172 any eq 22
 			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.136 any eq 22
+			permit tcp host 172.16.20.132 any eq 22
 			deny tcp any any eq 22
 			permit icmp host 192.168.30.172 any
 			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.20.136 any
+			permit icmp host 172.16.20.132 any
 			deny icmp any any
 			permit ip any any
 			exit
@@ -2792,7 +2792,7 @@ ACL
 			remark Az eszközre vonatkozó SSH szabályzat. / The devices SSH policies.
 			permit tcp host 192.168.30.172 any eq 22
 			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.136 any eq 22
+			permit tcp host 172.16.20.132 any eq 22
 			deny tcp any any eq 22
 			permit ip any any
 			exit
