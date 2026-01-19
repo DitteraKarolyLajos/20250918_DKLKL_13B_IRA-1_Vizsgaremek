@@ -1,8 +1,3 @@
-Stuff that needs to be done:
-	ACL
-	TFTP saves at the end
-	   192.168.30.204
-	
 Passwords
 	IBM
 		IBM_CNTRL_RTR0 - Enable - leaper33
