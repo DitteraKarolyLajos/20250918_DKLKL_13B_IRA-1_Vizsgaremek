@@ -89,6 +89,13 @@ Outside	80.90.125.32/30
 -x-IBM_CNTRL_RTR0
 en
 conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
 hostname IBM_CNTRL_RTR0
 int gig0/0/0
 description IBM_CNTRL_MLTLYRS0 felé, az IBM_PRJCTNS területe felé. / Towards IBM_CNTRL_MLTLYRS0, to the area of IBM_PRCJTNS.
@@ -133,11 +140,17 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszkoz csak is a feljegyzett authorizalt személyeknek elérheto a megadott munka orakban. Torvényi eljaras fog kivaltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken. 
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-IBM_CNTRL_RTR1
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
 en
 conf t
 hostname IBM_CNTRL_RTR1
@@ -180,8 +193,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-IBM_CNTRL_MLTLYRS0
@@ -274,8 +286,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_S0
@@ -346,8 +357,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x- IBM_CNTRL_PRJCTPNS_S1
@@ -418,8 +428,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_S2
@@ -500,8 +509,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_S3
@@ -597,8 +605,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_S4
@@ -694,8 +701,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_S5
@@ -776,8 +782,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_SRVRR_S0
@@ -807,8 +812,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_SRVRR_S1
@@ -838,8 +842,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-IBM_CNTRL_PRJCTPNS_SRVRR_S2
@@ -869,8 +872,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-
@@ -884,6 +886,13 @@ SOHO	172.16.16.0/24
 Outside	80.90.125.32/30
 
 -x-ANDOR_R
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
 en
 conf t
 hostname ANDOR_R
@@ -952,8 +961,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-ANDOR_S0
@@ -1026,8 +1034,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-ANDOR_S1
@@ -1111,8 +1118,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-ANDOR_S2
@@ -1185,8 +1191,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-
@@ -1199,6 +1204,13 @@ VLSM	Kun	172.16.15.0/24
 Outside	80.90.125.32/30
 
 -x-R_KUN
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
 en
 conf t
 hostname R_KUN
@@ -1277,8 +1289,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-SW_KUN_1
@@ -1349,8 +1360,7 @@ spanning-tree portfast bpduguard default
 spanning-tree mode rapid-pvst
 spanning-tree vlan 40 priority 0
 spanning-tree vlan 10 priority 4096
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-SW_KUN_2
@@ -1427,8 +1437,7 @@ spanning-tree portfast bpduguard default
 spanning-tree mode rapid-pvst
 spanning-tree vlan 20 priority 0
 spanning-tree vlan 30 priority 4096
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-SW_KUN_3
@@ -1505,8 +1514,7 @@ spanning-tree portfast bpduguard default
 spanning-tree mode rapid-pvst
 spanning-tree vlan 30 priority 0
 spanning-tree vlan 20 priority 4096
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-SW_KUN_A
@@ -1567,8 +1575,7 @@ spanning-tree portfast bpduguard default
 spanning-tree mode rapid-pvst
 spanning-tree vlan 10 priority 0
 spanning-tree vlan 40 priority 4096
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-
@@ -1584,7 +1591,63 @@ R1_F1 -> Outside	80.90.125.48/30
 R2_F1 -> Outside	80.90.125.52/30
 SOHO	172.16.11.0/24
 
+-x-R0_F1
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
+hostname R0_F1
+int gig0/2/0
+description Az R1_F1 eszköz felé, az F1 telephely felé. / Towards the R1_F1 device, to the site of F1.
+ip address 80.90.125.49 255.255.255.252
+no sh
+exit
+int gig0/0
+description A MAIN_ISP eszköz felé, az ISP területéhez és a Projectenis többi telephelyeihez. / Towards the MAIN_ISP device, to the sites of the inner ISP territory and Projectenis.
+ip address 80.90.125.46 255.255.255.252
+no sh
+exit
+int gig0/3/0
+description Az R2_F1 eszköz felé, az F1 telephely felé. / Towards the R2_F1 device, to the site of F1.
+ip address 80.90.125.53 255.255.255.252
+no sh
+exit
+router ospf 1
+router-id 198.198.198.198
+network 80.90.125.48 0.0.0.3 area 0
+network 80.90.125.52 0.0.0.3 area 0
+Network 80.90.125.44 0.0.0.3 area 0
+exit
+username ISPadmin password cortex999
+enable password enpass55
+ip domain-name ISP.com
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do write
+
+
 -x-R1_F1
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
 en
 conf t
 hostname R1_F1
@@ -1697,11 +1760,17 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-R2_F1
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
 en
 conf t
 hostname R2_F1
@@ -1810,8 +1879,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-SW_F1_A
@@ -1873,8 +1941,7 @@ spanning-tree portfast bpduguard default
 spanning-tree mode rapid-pvst
 spanning-tree vlan 10 priority 0
 spanning-tree vlan 40 priority 4096
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-SW_F1_1
@@ -1985,8 +2052,7 @@ spanning-tree portfast bpduguard default
 spanning-tree mode rapid-pvst
 spanning-tree vlan 40 priority 0
 spanning-tree vlan 10 priority 4096
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-SW_F1_2
@@ -2092,8 +2158,7 @@ spanning-tree portfast bpduguard default
 spanning-tree mode rapid-pvst
 spanning-tree vlan 20 priority 0
 spanning-tree vlan 30 priority 4096
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-SW_F1_3
@@ -2192,8 +2257,7 @@ exit
 spanning-tree portfast bpduguard default
 spanning-tree mode rapid-pvst
 spanning-tree vlan 30 priority 0
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-SW_F1_4
@@ -2277,8 +2341,7 @@ exit
 spanning-tree portfast bpduguard default
 spanning-tree mode rapid-pvst
 spanning-tree vlan 20 priority 4096
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-
@@ -2294,6 +2357,13 @@ VLSM	ISP	80.90.125.0/24
 	ISP-RMTWRKR	80.90.125.56/30
 
 -x-MAIN_ISP
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
 en
 conf t
 hostname MAIN_ISP
@@ -2356,8 +2426,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-MAIN_ISP_SW
@@ -2384,50 +2453,7 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
-do write
-
--x-ISP_RF1
-en
-conf t
-hostname ISP_RF1
-int gig0/2/0
-description Az R1_F1 eszköz felé, az F1 telephely felé. / Towards the R1_F1 device, to the site of F1.
-ip address 80.90.125.49 255.255.255.252
-no sh
-exit
-int gig0/0
-description A MAIN_ISP eszköz felé, az ISP területéhez és a Projectenis többi telephelyeihez. / Towards the MAIN_ISP device, to the sites of the inner ISP territory and Projectenis.
-ip address 80.90.125.46 255.255.255.252
-no sh
-exit
-int gig0/3/0
-description Az R2_F1 eszköz felé, az F1 telephely felé. / Towards the R2_F1 device, to the site of F1.
-ip address 80.90.125.53 255.255.255.252
-no sh
-exit
-router ospf 1
-router-id 198.198.198.198
-network 80.90.125.48 0.0.0.3 area 0
-network 80.90.125.52 0.0.0.3 area 0
-Network 80.90.125.44 0.0.0.3 area 0
-exit
-username ISPadmin password cortex999
-enable password enpass55
-ip domain-name ISP.com
-crypto key generate rsa
-1024
-
-ip ssh version 2
-ip ssh authentication-retries 2
-ip ssh time-out 120
-line vty 0 15
-transport input ssh
-login local
-exit
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-
@@ -2460,7 +2486,7 @@ exit
 ip domain-name Projectenis.com
 access-list 1 permit 192.168.100.0 0.0.0.255
 ip nat inside source list 1 interface gig0/0 overload
-banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhető a megadott munka órákban. Törvényi eljárás fog kiváltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
+banner motd % This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
 %
 do write
 
@@ -2728,11 +2754,11 @@ ACL
 			remark A KUN telephelyen lévő adminisztratív eszközök felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the administrative devices trough the subinterface in KUN.
 			permit tcp host 192.168.30.172 any eq 22
 			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.136 any eq 22
+			permit tcp host 172.16.20.132 any eq 22
 			deny tcp any any eq 22
 			permit icmp host 192.168.30.172 any
 			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.20.136 any
+			permit icmp host 172.16.20.132 any
 			deny icmp any any
 			permit ip any any
 			exit
@@ -2744,11 +2770,11 @@ ACL
 			remark A KUN telephelyen lévő Linux csapat eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices inside the Linux team trough the subinterface in KUN.
 			permit tcp host 192.168.30.172 any eq 22
 			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.136 any eq 22
+			permit tcp host 172.16.20.132 any eq 22
 			deny tcp any any eq 22
 			permit icmp host 192.168.30.172 any
 			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.20.136 any
+			permit icmp host 172.16.20.132 any
 			deny icmp any any
 			permit ip any any
 			exit
@@ -2760,11 +2786,11 @@ ACL
 			remark A KUN telephelyen lévő Windows csapat eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices inside the Windows team trough the subinterface in KUN.
 			permit tcp host 192.168.30.172 any eq 22
 			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.136 any eq 22
+			permit tcp host 172.16.20.132 any eq 22
 			deny tcp any any eq 22
 			permit icmp host 192.168.30.172 any
 			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.20.136 any
+			permit icmp host 172.16.20.132 any
 			deny icmp any any
 			permit ip any any
 			exit
@@ -2776,11 +2802,11 @@ ACL
 			remark A KUN telephelyen lévő vezetőségnek az eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices of the management trough the subinterface in KUN.
 			permit tcp host 192.168.30.172 any eq 22
 			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.136 any eq 22
+			permit tcp host 172.16.20.132 any eq 22
 			deny tcp any any eq 22
 			permit icmp host 192.168.30.172 any
 			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.20.136 any
+			permit icmp host 172.16.20.132 any
 			deny icmp any any
 			permit ip any any
 			exit
@@ -2792,7 +2818,7 @@ ACL
 			remark Az eszközre vonatkozó SSH szabályzat. / The devices SSH policies.
 			permit tcp host 192.168.30.172 any eq 22
 			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.136 any eq 22
+			permit tcp host 172.16.20.132 any eq 22
 			deny tcp any any eq 22
 			permit ip any any
 			exit
@@ -2802,6 +2828,38 @@ ACL
 			...
 	F1
 		4 vlan van, ebből senkinek sincsen joga kifelé ping-ni vagy ssh-ni. Az Admin vlan-nak viszont van joga befele ping-ni és ssh-ni, ugyanezen jogokkal rendelkezik a központi kettő admin.
+		R0_F1
+			...
+			ip access-list extended ISP_RF1_O_G020
+			remark Az ISP területében lévő eszközök F1 felé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards F1 site from the devices in ISP territory trough the optical cable interface. 
+			deny tcp 80.90.125.0 0.0.0.255 any eq 22
+			deny icmp 80.90.125.0 0.0.0.255 any
+			permit ip any any
+			exit
+			int gig0/2/0
+			ip access-group ISP_MAIN_O_G020 out
+			no sh
+			exit
+			ip access-list extended ISP_RF1_O_G030
+			remark Az ISP területében lévő eszközök F1 felé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards F1 site from the devices in ISP territory trough the optical cable interface. 
+			deny tcp 80.90.125.0 0.0.0.255 any eq 22
+			deny icmp 80.90.125.0 0.0.0.255 any
+			permit ip any any
+			exit
+			int gig0/3/0
+			ip access-group ISP_MAIN_O_G030 out
+			no sh
+			exit
+			ip access-list extended SSH
+			remark Az eszközre vonatkozó SSH szabályzat. / The devices SSH policies.
+			permit tcp host 80.90.125.29 any eq 22
+			deny tcp any any eq 22
+			permit ip any any
+			exit
+			line vty 0 15
+			access-class SSH in
+			exit
+			...
 		R1_F1
 			...
 			ip access-list extended R1_F1_O_G020
@@ -3015,38 +3073,6 @@ ACL
 			exit
 			ip access-list extended ISP_MAIN_O_G030
 			remark Az ISP területében lévő eszközök KUN felé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards KUN site from the devices in ISP territory trough the optical cable interface. 
-			deny tcp 80.90.125.0 0.0.0.255 any eq 22
-			deny icmp 80.90.125.0 0.0.0.255 any
-			permit ip any any
-			exit
-			int gig0/3/0
-			ip access-group ISP_MAIN_O_G030 out
-			no sh
-			exit
-			ip access-list extended SSH
-			remark Az eszközre vonatkozó SSH szabályzat. / The devices SSH policies.
-			permit tcp host 80.90.125.29 any eq 22
-			deny tcp any any eq 22
-			permit ip any any
-			exit
-			line vty 0 15
-			access-class SSH in
-			exit
-			...
-		ISP_RF1
-			...
-			ip access-list extended ISP_RF1_O_G020
-			remark Az ISP területében lévő eszközök F1 felé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards F1 site from the devices in ISP territory trough the optical cable interface. 
-			deny tcp 80.90.125.0 0.0.0.255 any eq 22
-			deny icmp 80.90.125.0 0.0.0.255 any
-			permit ip any any
-			exit
-			int gig0/2/0
-			ip access-group ISP_MAIN_O_G020 out
-			no sh
-			exit
-			ip access-list extended ISP_RF1_O_G030
-			remark Az ISP területében lévő eszközök F1 felé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards F1 site from the devices in ISP territory trough the optical cable interface. 
 			deny tcp 80.90.125.0 0.0.0.255 any eq 22
 			deny icmp 80.90.125.0 0.0.0.255 any
 			permit ip any any

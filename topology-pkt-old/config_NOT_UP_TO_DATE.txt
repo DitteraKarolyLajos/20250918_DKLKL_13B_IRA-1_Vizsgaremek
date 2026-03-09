@@ -89,6 +89,13 @@ Outside	80.90.125.32/30
 -x-IBM_CNTRL_RTR0
 en
 conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
 hostname IBM_CNTRL_RTR0
 int gig0/0/0
 description IBM_CNTRL_MLTLYRS0 felé, az IBM_PRJCTNS területe felé. / Towards IBM_CNTRL_MLTLYRS0, to the area of IBM_PRCJTNS.
@@ -133,11 +140,17 @@ line vty 0 15
 transport input ssh
 login local
 exit
-banner motd %Az eszkoz csak is a feljegyzett authorizalt személyeknek elérheto a megadott munka orakban. Torvényi eljaras fog kivaltani az engedélyezetlen bejelentkezés vagy bármilyen cselekedett, ami veszélyezteti a tulaj céget. | This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken. 
-%
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do wr
 
 -x-IBM_CNTRL_RTR1
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
 en
 conf t
 hostname IBM_CNTRL_RTR1
@@ -886,6 +899,13 @@ Outside	80.90.125.32/30
 -x-ANDOR_R
 en
 conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
 hostname ANDOR_R
 int gig0/3/0
 description Az ISP területe és a Projectenis telephelyei felé. / Towards the site of the ISP and towards the sites of PRJCTNS.
@@ -1199,6 +1219,13 @@ VLSM	Kun	172.16.15.0/24
 Outside	80.90.125.32/30
 
 -x-R_KUN
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
 en
 conf t
 hostname R_KUN
@@ -1587,6 +1614,13 @@ SOHO	172.16.11.0/24
 -x-R1_F1
 en
 conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
 hostname R1_F1
 router ospf 1
 router-id 5.5.5.5
@@ -1702,6 +1736,13 @@ banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhe
 do write
 
 -x-R2_F1
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
 en
 conf t
 hostname R2_F1
@@ -2296,6 +2337,13 @@ VLSM	ISP	80.90.125.0/24
 -x-MAIN_ISP
 en
 conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
 hostname MAIN_ISP
 int gig0/1/0
 description Az IBM központi telephely felé. / Towards the central site of IBM.
@@ -2389,6 +2437,13 @@ banner motd %Az eszköz csak is a feljegyzett authorizált személyeknek elérhe
 do write
 
 -x-ISP_RF1
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
 en
 conf t
 hostname ISP_RF1
