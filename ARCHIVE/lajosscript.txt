@@ -1,0 +1,59 @@
+DHCP
+	- Lényege
+		- OSI Modell 7. rétegében lévő szolgáltatás, ami mentén tudunk különböző hálózati végeszközöknek automatikusan kiosztani hálózat információs adatokat, mint például IP cím vagy Default Gateway.
+	- Működés
+		- 4 fő lépés van, amit DORA néven szoktak rövidíteni
+			- DHCP Discovery
+				- Kliens küld egy broadcast üzenetet, amiben IP címet kér, erre a legelső alkalmas szerver reagál
+			- DHCP Offer
+				- A szerver az adott kliensnek küldi ezt válaszul, és hozzá csatolja az annak szánt hálózati konfigurációs adatokat
+			- DHCP Request
+				- A kliens visszajelez ezen Broadcast üzenettel, hogy megkapta az adatokat és megfelelőek neki
+					- Ha ezt megkapja a szerver, akkor ő is ellenőrzi, hogy minden helyesen van-e nála feljegyezve
+			- DHCP Ack
+				- Szerver küldi kliensnek, értesíti, hogy a leegyeztetett hálózat konfigurációs adatokat, a feljegyzet bérlési időre ki vannak adva számára
+		- 3 extra lépés
+			- DHCP NAK
+				- Szerver értesíti a klienst hogy kérése nem teljesíthető
+			- DHCP Decline
+				- A kliens jelzi a szervernek, hogy a szolgáltatott adat nem megfelelő számára
+			- DHCP Release
+				- A kliens értesíti a szervert, hogy lemond a maradék rendelkezésre álló bérlési időről
+	- DHCPv4
+		- DHCPv4 szerver UDP67 portján fülel, és 68 portján válaszol
+		- Mik azok az adatok, amiket szolgálunk specifikusan
+			- Pool-okban vannak elszeparálva a különböző végeszköz csoportoknak szánt információk
+				- Ip címeket adunk fel egy listából
+				- Megadjuk a prefixet
+				- Megadjuk a default gateway-t
+				- Megadhatunk szerver szolgáltatásokat is, mint tftp vagy dns
+			- A szintaxisa függ attól, hogy milyen operációs rendszeren futtatjuk, de az adat ugyanaz
+				- Valós környezetben, a szolgáltatott információk pontos terjedelmét tudjuk befolyásolni DHCP option numerikus referencia értékekkel, például a default gateway az option 3, míg a DNS a 6-os
+		- E topológiában való működésének fontos eleme, hogy van a router-ekre IP helper-address konfiguráltatva, a DHCP szerver a router-ek ip címe alapján tudja pontosan továbbítatni válasz üzeneteit, valamint így tudd a távoli DHCP szerver elérésében segíteni a router
+
+
+OSPF
+   - Dinamikus forgalomirányító protokoll
+      - Hasznos, ugyanis rengeteg forgalomirányító eszközt implementálunk, a rendszergazda túl lenne terhelve ha mindegyiket statikusan kéne szerkezgetnie esetleges hálózati hibák kelektezésekor
+      - IGP
+         - Link-state
+            - Az itt lévő protokollok szomszédsági kapcsolatok fenntartásával követik a különböző hálózati szegmensek elérhetőségét
+            - Hello-packet-el ellenőrzik, hogy ugyanazon alfajtájú protokollt futattják-e
+   - v2 Működés
+      - Három táblázatra alapul
+         - Forgalom irányító tábla, legjobb útvonal, Forwarding database
+         - Topológiai tábla, összes útvonal, Link state database
+         - Szomszédsági tábla, link-state sajátoság, amivel szomszéd router-el kapcsolatos adatokat tart fenn, adjacency database
+      - Az alapján dönti el, hogy "mi a legrövidebb út", hogy a különböző hálózati kapcsolatok minőségét összeadja, és legalacsonyabbat kiválasztja. A minőséget, cost értékben méri, amit referncia sávszélleség és interface sávszélleség hányadásából kap meg. A útvonal választást és a cost érték számlálást a DIJSKTRA algoritmus végzi el.
+      - Indítási folyamat
+         - Hellozás, a már említett hello csomagokkal felismerik egymást az eszközök és közvetlen kapcsolatot építenek ki. Befolyásolja a Hello és Dead timer, amik pontosan kell hogy legyenek megadva
+         - Szomszédság kialakítása során a szomszédok eltanulják egymás által ismert közvetlen hálózattokat
+         - Távoli hálózatok megismerése során pedig a szomszédok elkezdik egymást sorra LSA üzenetekkel elárasztani, amik mentén különböző hierarchia és alhálózati információkat tudnak meg egymástól
+         - Konvergencia akkor alakul ki, mikor minden router megismerte az összes fő és alhálózatot, szerepkörök ki lettek osztva
+            - Szerpekörök többes elérésű hálózatokban vannak megadva a csomagváltási folyamat során
+               - Designated Router
+               - Backup designated router
+      - Több területű OSPF-t alkalmazunk, hogy kisebb forgalomirányító táblák legyenek, valamint a hálózati forgalom is csökkenjen, a konvergencia hamarabb alakul ki. 
+ 
+      
+

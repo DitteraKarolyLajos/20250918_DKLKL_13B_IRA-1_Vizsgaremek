@@ -1,0 +1,97 @@
+-----LAJOS--------
+DHCP (IBM)
+
+lecsapod az áramot
+   - Végig engeded a DHCP folyamatot Simulation-ben
+   - Ahogy beszélek a DORA-ról, úgy felhozod a megfelelő üzenetket, esetleg PDU formation-t is megmutattjuk
+      - Majd yap-elek
+   - Ahogy az option és egyebekről beszélek, csak húzd elő az egyik pool-t a services/DHCP/ fülben
+   - IP helper-address-t húzd elő show run-ból
+
+szimulációs mód:
+IBM random gép ip (dhcp-->static-->dhcp)
+ - show client sending dhcp request out
+Multilyaer switch (rocketeer63)
+ - show running-config
+  - at vlans (5,10,15) show ip helper-address
+
+DHCP szerver
+ - at device --> DHCP szerver
+  - layer 7 (in layers)+ layer 7 (out layers)
+
+kliens gép
+ - at device --> kliens gép
+  - layer 7 (in layers)+ layer 7 (out layers)
+
+DHCP szerver
+ - at device --> DHCP szerver
+  - layer 7 (in layers)+ layer 7 (out layers)
+
+kliens gép
+ - at device --> kliens gép
+  - layer 7 (in layers)+ layer 7 (out layers)
+
+DHCP szerver
+ - random pool
+
+---------------
+OSPF (IBM)
+
+Három táblázat, ahogy beszélek róluk
+   #show ip route
+   #show ip ospf database
+   #show ip ospf neighbour 
+Amikor cost értékről dumálok
+   #show ip ospf interface gig0/2/0
+Indítási folyamat
+   Lecsapod az áramot, simulation mode
+       - sötétkétől kezdve nem csak hello packetek vannak (layer 3)
+       - más más színeket mutatni
+Több területiség/működés
+   RTR0-án
+      #show ip ospf inteface gig0/2/0
+      #show ip ospf interface gig0/0/0
+   Multilayer switch, show run, hogy lássak exact config code-t az ospf-ről, picit arról is yap
+
+
+
+realtime:
+RTR0 (leaper33)
+ - show OSPF FULL messages
+ - show ip ospf neighbor
+ - show ip ospf database
+ - show ip route
+
+
+
+-----LEVI--------------
+DTP (F1)
+
+random Switch 
+- show interfaces [Access interface] switchport
+- show interfaces [Trunk interface] switchport 
+ - Operational Mode: trunk
+ - Administrative Trunking Encapsulation: dot1q
+ - Operational Trunking Encapsulation: dot1q
+- show running-config
+ - display code
+
+random router:
+ - show running-config
+  - gig0/0.X
+   - encapsulation
+
+
+HSRP RÉGI FILE (F1) ("\topology-pkt-old\VIZSGAREMEK_topology_BeforeACL másolata.pkt")
+Hellopacket
+ - Pull up PDU formats from simulation
+R1_F1 (enpass55)
+ - show "standby -> active" messages
+ - show standby brief
+R2_F1 (enpass55)
+ - show "standby -> active" messages
+ - show standby brief
+Group number kiemelés
+Virtual IP kiemelés
+Show host with default gateway
+Ping from host once and then destroy 1 router, and ping again
