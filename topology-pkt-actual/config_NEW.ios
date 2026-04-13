@@ -1203,6 +1203,54 @@ VLSM	Kun	172.16.15.0/24
 	VLAN40	MANAGER		172.16.20.144/29
 Outside	80.90.125.32/30
 
+-x-ASA_KUN
+en
+conf t
+hostname ASAKUN
+router ospf 1 
+router-id 6.6.6.6
+network 80.90.125.42 255.255.255.252 area 0
+network 172.16.20.157 255.255.255.252 area 3
+exit
+int gig1/1
+nameif inside
+ip address 172.16.20.157 255.255.255.252
+security-level 100
+no sh
+int gig1/2
+nameif outside
+ip address 80.90.125.42 255.255.255.252
+security-level 0
+no sh
+exit
+route outside 0.0.0.0 0.0.0.0 80.90.125.41
+route inside 172.16.20.0 255.255.255.0 172.16.20.158
+object network INSIDE-KUN 
+subnet 172.16.20.0 255.255.255.0
+nat (inside, outside) dynamic interface
+
+access-list OUTSIDE-INSIDE extended permit ip host 192.168.30.192 any
+
+class-map CMAP-KUN
+match access-list OUTSIDE-INSIDE
+exit
+policy-map PMAP-KUN
+class CMAP-KUN
+inspect dns
+inspect ftp
+inspect tftp
+inspect http
+inspect icmp
+exit
+service-policy PMAP-KUN interface outside
+ssh 172.16.20.132 255.255.255.255 inside
+ssh 192.168.30.192 255.255.255.255 outside
+dhcprelay server 192.168.30.199 outside
+dhcprelay enable inside
+
+
+do wr
+
 -x-R_KUN
 en
 conf t
@@ -1215,12 +1263,12 @@ en
 conf t
 hostname R_KUN
 router ospf 1 
-router-id 6.6.6.6
+router-id 3.3.3.3
 network 172.16.20.0 0.0.0.63 area 3
 network 172.16.20.64 0.0.0.63 area 3
 network 172.16.20.128 0.0.0.15 area 3
 network 172.16.20.144 0.0.0.7 area 3
-network 80.90.125.40 0.0.0.3 area 0
+network 172.16.20.156 0.0.0.3 area 3
 passive-interface gig0/2.10
 passive-interface gig0/2.20
 passive-interface gig0/2.30
@@ -1253,9 +1301,9 @@ exit
 int gig0/2
 no sh
 exit
-int gig0/3/0
+int gig0/1
 description Az ISP területe és a Projectenis telephelyei felé. / Towards the site of the ISP and towards the sites of PRJCTNS.
-ip address 80.90.125.42 255.255.255.252
+ip address 172.16.20.158 255.255.255.252
 no sh
 exit
 ip dhcp excluded-address 172.16.20.1
@@ -1607,7 +1655,7 @@ description Az R1_F1 eszköz felé, az F1 telephely felé. / Towards the R1_F1 d
 ip address 80.90.125.49 255.255.255.252
 no sh
 exit
-int gig0/0
+int gig0/1/0
 description A MAIN_ISP eszköz felé, az ISP területéhez és a Projectenis többi telephelyeihez. / Towards the MAIN_ISP device, to the sites of the inner ISP territory and Projectenis.
 ip address 80.90.125.46 255.255.255.252
 no sh
@@ -1658,7 +1706,7 @@ network 172.16.10.64 0.0.0.63 area 4
 network 172.16.10.128 0.0.0.15 area 4
 network 172.16.10.144 0.0.0.15 area 4
 network 172.16.10.160 0.0.0.3 area 4
-Network 172.16.10.164 0.0.0.3 area 4
+network 172.16.10.164 0.0.0.3 area 4
 network 80.90.125.48 0.0.0.3 area 0
 passive-interface gig0/0.10
 passive-interface gig0/0.20
@@ -2377,12 +2425,12 @@ description Az ANDOR telephely felé. / Towards the site of ANDOR.
 ip address 80.90.125.38 255.255.255.252
 no sh
 exit
-int gig0/3/0
+int gig0/0
 description A KUN telephely felé. / Towards the site of KUN.
 ip address 80.90.125.41 255.255.255.252
 no sh
 exit
-int gig0/0
+int gig0/0/0
 description Az ISP_RF1 eszköz felé, az F1 telephely felé. / Towards the ISP_RF1 device, to the site of F1.
 ip address 80.90.125.45 255.255.255.252
 no sh
@@ -2465,7 +2513,7 @@ Outside 80.90.125.56/30
 en
 conf t
 hostname R_TAV
-int vlan 1
+int vlan 10
 description A Projectenis távmunkásainak fenn tartott VLAN. / A dedicated VLAN for the remote workers of Projectenis.
 ip address 192.168.100.1 255.255.255.0
 ip nat inside
@@ -2477,17 +2525,23 @@ ip address dhcp
 ip nat outside
 no sh
 exit
+int range fa 0/1/0-3
+switchport mode access
+switchport access vlan 10
+spanning-tree portfast
+no sh
+exit
 ip dhcp excluded-address 192.168.100.1
 ip dhcp pool TAVMUNKAS
 network 192.168.100.0 255.255.255.0
 default-router 192.168.100.1
 dns-server 192.168.30.196
+domain-name Projectenis.com
 exit
 ip domain-name Projectenis.com
 access-list 1 permit 192.168.100.0 0.0.0.255
 ip nat inside source list 1 interface gig0/0 overload
-banner motd % This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.
-%
+banner motd % This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
 do write
 
 -x-
