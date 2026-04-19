@@ -141,6 +141,9 @@ transport input ssh
 login local
 exit
 banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+
+access-list 1 permit 192.168.30.192 0.0.0.15
+ip nat inside source list 1 interface GigabitEthernet0/1/0 overload
 do wr
 
 -x-IBM_CNTRL_RTR1
@@ -896,9 +899,15 @@ do reload
 en
 conf t
 hostname ANDOR_R
+zone security INSIDE
+exit
+zone security OUTSIDE
+exit
 int gig0/3/0
 description Az ISP területe és a Projectenis telephelyei felé. / Towards the site of the ISP and towards the sites of PRJCTNS.
 ip add 80.90.125.37 255.255.255.252
+ip nat outside
+zone-member security OUTSIDE
 no sh
 exit
 int gig0/1.3
@@ -906,6 +915,7 @@ description Az ANDOR első emeleti VLAN-hoz fenn tartott al-interface. / The fir
 encapsulation dot1q 3
 ip add 172.16.15.1 255.255.255.192
 ip helper-address 192.168.30.199
+ip nat inside
 no sh
 exit
 int gig0/1.6
@@ -913,6 +923,7 @@ description Az ANDOR második emeleti VLAN-hoz fenn tartott al-interface. / The 
 encapsulation dot1q 6
 ip add 172.16.15.65 255.255.255.192
 ip helper-address 192.168.30.199
+ip nat inside
 no sh
 exit
 int gig0/1.9
@@ -920,15 +931,19 @@ description Az ANDOR földszinti VLAN-hoz fenn tartott al-interface. / The groun
 encapsulation dot1q 9
 ip add 172.16.15.129 255.255.255.224
 ip helper-address 192.168.30.199
+ip nat inside
 no sh
 exit
 int gig0/1.12
 description Az ANDOR adminisztratív VLAN alhálózatának fenn tartott al-interface. / The administrative VLAN subnetworks subinterface of ANDOR.
 encapsulation dot1q 12 native
 ip add 172.16.15.161 255.255.255.240
+ip nat inside
 no sh
 exit
 int gig0/1
+ip nat inside
+zone-member security INSIDE
 no sh
 exit
 router ospf 1
@@ -962,6 +977,86 @@ transport input ssh
 login local
 exit
 banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+
+access-list 199 remark ANDOR-2-IBM
+access-list 199 permit ip any 80.90.125.33 0.0.0.3
+
+access-list 198 remark IBM-2-ANDOR
+access-list 198 permit ip 80.90.125.33 0.0.0.3 any
+
+
+ip access-list extended FRSTFLR-2-SCNDFLR
+deny ip 172.16.15.0 0.0.0.63 172.16.15.64 0.0.0.63
+exit
+ip access-list extended FRSTFLR-2-GRNDFLR
+deny ip 172.16.15.0 0.0.0.63 172.16.15.128 0.0.0.31
+exit
+ip access-list extended FRSTFLR-2-ADMIN
+permit ip 172.16.15.0 0.0.0.63 172.16.15.160 0.0.0.31
+exit
+ip access-list extended SCNDFLR-2-FRSTFLR
+deny ip 172.16.15.64 0.0.0.63 172.16.15.0 0.0.0.63
+exit
+ip access-list extended SCNDFLR-2-GRNDFLR
+deny ip 172.16.15.64 0.0.0.63 172.16.15.128 0.0.0.31
+exit
+ip access-list extended SCNDFLR-2-ADMIN
+permit ip 172.16.15.64 0.0.0.63 172.16.15.160 0.0.0.31
+exit
+ip access-list extended GRNDFLR-2-FRSTFLR
+deny ip 172.16.15.128 0.0.0.31 172.16.15.0 0.0.0.63
+exit
+ip access-list extended GRNDFLR-2-SCNDFLR
+deny ip 172.16.15.128 0.0.0.31 172.16.15.64 0.0.0.63
+exit
+ip access-list extended FRSTFLR-2-ADMIN
+permit ip 172.16.15.128 0.0.0.31 172.16.15.160 0.0.0.31
+exit
+ip access-list extended ADMIN-2-FRSTFLR
+permit ip 172.16.15.160 0.0.0.31 172.16.15.0 0.0.0.63
+exit
+ip access-list extended ADMIN-2-SCNDFLR
+permit ip 172.16.15.160 0.0.0.31 172.16.15.64 0.0.0.63
+exit
+ip access-list extended ADMIN-2-GRNDFLR
+permit ip 172.16.15.160 0.0.0.31 172.16.15.128 0.0.0.31
+exit
+
+
+
+access-list 1 permit 172.16.15.0 0.0.0.63
+access-list 1 permit 172.16.15.64 0.0.0.63
+access-list 1 permit 172.16.15.128 0.0.0.31
+access-list 1 permit 172.16.15.160 0.0.0.31
+ip nat inside source list 1 interface GigabitEthernet0/3/0 overload
+
+class-map type inspect match-any CMAP-INSIDE-2-OUTSIDE
+match protocol http
+match protocol https
+match protocol dns
+match protocol ftp
+match protocol tftp
+match access-group 199 
+exit
+class-map type inspect match-any CMAP-IBMOUTSIDE-2-INSIDE
+match access-group 198 
+exit
+
+policy-map type inspect PMAP-INSIDE-2-OUTSIDE
+class type inspect CMAP-INSIDE-2-OUTSIDE
+inspect
+exit
+policy-map type inspect PMAP-IBMOUTSIDE-2-INSIDE
+class type inspect CMAP-IBMOUTSIDE-2-INSIDE
+inspect
+exit
+
+zone-pair security ZPAIR-INSIDE-2-OUTSIDE source INSIDE destination OUTSIDE
+service-policy type inspect PMAP-INSIDE-2-OUTSIDE 
+exit
+zone-pair security ZPAIR-IBMOUTSIDE-2-INSIDE source OUTSIDE destination INSIDE
+service-policy type inspect PMAP-IBMOUTSIDE-2-INSIDE 
+exit
 do wr
 
 -x-ANDOR_S0
@@ -2475,6 +2570,26 @@ transport input ssh
 login local
 exit
 banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+
+
+bba-group pppoe global
+virtual-template 1
+exit
+username MAIN_ISP password ispAuth1234
+ip local pool PPP_POOL 80.90.125.58 80.90.125.58
+aaa new-model
+aaa authentication ppp default local
+interface Virtual-Template1
+ip unnumbered gig0/1
+peer default ip address pool PPP_POOL
+ppp authentication chap
+exit
+int gig0/1
+pppoe enable
+no sh
+exit
+
+
 do write
 
 -x-MAIN_ISP_SW
@@ -2542,6 +2657,26 @@ ip domain-name Projectenis.com
 access-list 1 permit 192.168.100.0 0.0.0.255
 ip nat inside source list 1 interface gig0/0 overload
 banner motd % This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+
+
+username MAIN_ISP password ispAuth1234
+interface Dialer1
+ip address negotiated
+encapsulation ppp
+dialer pool 1
+ppp chap hostname MAIN_ISP
+ppp chap password ispAuth1234
+no sh
+exit
+int gig 0/0
+no ip address
+pppoe enable
+pppoe-client dial-pool-number 1
+no sh
+exit
+ip route 0.0.0.0 0.0.0.0 Dialer1
+
+
 do write
 
 -x-
