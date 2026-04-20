@@ -1,0 +1,748 @@
+Passwords
+	IBM
+		IBM_CNTRL_RTR0 - Enable - leaper33
+		IBM_CNTRL_RTR1 - Enable - leaper25
+		IBM_CNTRL_MLTLYRS0 - Enable - rocketeer63
+		IBM_CNTRL_MLTLYRS0 - VTP - evildynamo367
+		IBM_CNTRL_PRJCTPNS_S0 - Enable - tadc529
+		IBM_CNTRL_PRJCTPNS_S0 - VTP - evildynamo367
+		IBM_CNTRL_PRJCTPNS_SRVRR_S0 - Enable - leaper33
+	KUN
+		R_KUN - Enable - enpass55
+		SW_KUN_1 - Enable - enpass55 
+		SW_KUN_1 - VTP - ibmkunpa55
+		SW_KUN_A - Enable - enpass55
+		SW_KUN_A - VTP - ibmkunpass55
+	ISP
+		MAIN_ISP - Enable - enpass55
+		MAIN_ISP_SW - Enable - enpass55
+	
+Admin logins&policies
+	Overlord839 - ibmadmin839 - IBMs Overseeing Admin, Access to All of IBM and Project E.N.I.S.
+	Rocket375 - projectenis375 - One of IBM Project E.N.I.S. Admins, Access to all of Project E.N.I.S.
+	Rifle622 - projectenis622 - One of IBM Project E.N.I.S. Admins, Access to all of Project E.N.I.S.
+	Servermanager521 - definitum521 - Admin of the IBM Central Server Room, Access to IBM Central Server Room
+	Xadmin999 - 9rutk9skac9 - Different Admins of different sites, Access to their respective sites
+		Example - IBMadmin999 - 9rutk9skac9
+		Exception - ISPadmin - cortex999 - Admin of ISP site, has Access to their own territory, and nobody else does have Access to ISP like he does
+
+---IBM Central
+VLSM	Centrum	192.168.30.0/24
+	VLAN5	WRKFRC1	192.168.30.0/26
+	VLAN10	WRKFRC2	192.168.30.64/26
+	VLAN15	HGHRPS	192.168.30.128/27
+	VLAN20	ADMIN	192.168.30.160/27
+	Szerver szoba	192.168.30.192/28
+	Gerinc router	192.168.30.208/30
+	GR-SR safety	192.168.30.212/30
+	Gerinc R-MLS	192.168.30.216/30
+Outside	80.90.125.32/30
+
+-x-IBM_CNTRL_RTR0
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
+hostname IBM_CNTRL_RTR0
+int gig0/1/0
+description Towards IBM_CNTRL_MLTLYRS0, to the area of IBM_PRCJTNS.
+ip add 192.168.30.217 255.255.255.252
+no sh
+exit
+int gig0/2/0
+description Towards IBM_CNTRL_RTR1, to the server room of Projectenis.
+ip add 192.168.30.209 255.255.255.252
+no sh
+exit
+int se0/0/0
+description A backup connection to IBM_CNTRL_RTR1, to the server room of Projectenis.
+ip add 192.168.30.213 255.255.255.252
+no sh
+exit
+int gig0/3/0
+description Towards the site of the ISP and towards the sites of PRJCTNS.
+ip add 80.90.125.33 255.255.255.252
+no sh
+exit
+router ospf 1
+router-id 10.10.10.10
+Network 80.90.125.32 0.0.0.3 area 0
+Network 192.168.30.212 0.0.0.3 area 1
+Network 192.168.30.208 0.0.0.3 area 1
+Network 192.168.30.216 0.0.0.3 area 1
+exit
+ip domain-name Projectenis.com
+enable pass leaper33
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+crypto ikev2 proposal IKEV2
+do wr
+
+-x-IBM_CNTRL_RTR1
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
+hostname IBM_CNTRL_RTR1
+int gig0/3/0
+description Towards IBM_CNTRL_RTR0, which leads to ISP, the other sites of Projectenis and to IBM_CNTRL.
+ip add 192.168.30.210 255.255.255.252
+no sh
+exit
+int se0/2/0
+description A backup connection towards IBM_CNTRL_RTR0, which leads to ISP, the other sites of Projectenis and to IBM_CNTRL.
+ip add 192.168.30.214 255.255.255.252
+no sh
+exit
+int gig0/2
+description Towards the server room of Projectenis.
+ip add 192.168.30.193 255.255.255.240
+no sh
+exit
+router ospf 1
+router-id 9.9.9.9
+Network 192.168.30.192 0.0.0.15 area 1
+Network 192.168.30.208 0.0.0.3 area 1
+Network 192.168.30.212 0.0.0.3 area 1
+passive-interface gig0/2
+exit
+ip domain-name Projectenis.com
+enable pass leaper25
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Servermanager521 password definitum521
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-IBM_CNTRL_MLTLYRS0
+en
+conf t
+hostname IBM_CNTRL_MLTLYRS0
+ip routing
+int gig1/1/1
+no switchport
+ip add 192.168.30.218 255.255.255.252
+no sh
+description Towards IBM_CNTRL_RTR0, to ISP, and the server room and different sites of Projectenis.
+exit
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 5
+description A dedicated VLAN for IBM_CNTRL_PRJCTPNS first workforce.
+ip add 192.168.30.1 255.255.255.192
+ip helper-address 192.168.30.199
+no sh
+exit
+int vlan 10
+description A dedicated VLAN for IBM_CNTR_PRJCTPNS second workforce.
+ip add 192.168.30.65 255.255.255.192
+ip helper-address 192.168.30.199
+no sh
+exit
+int vlan 15
+description A dedicated VLAN for IBM_CNTRL_PRJCTPNS higher ups.
+ip add 192.168.30.129 255.255.255.224
+ip helper-address 192.168.30.199
+no sh
+exit
+int vlan 20
+description The administrative VLAN subnetwork of IBM_CNTRL_PRJCTPNS.
+ip add 192.168.30.161 255.255.255.224
+no sh
+exit
+router ospf 1
+router-id 8.8.8.8
+Network 192.168.30.216 0.0.0.3 area 1
+Network 192.168.30.0 0.0.0.63 area 1
+Network 192.168.30.64 0.0.0.63 area 1
+Network 192.168.30.128 0.0.0.31 area 1
+Network 192.168.30.160 0.0.0.31 area 1
+passive-interface vlan5
+passive-interface vlan10
+passive-interface vlan15
+passive-interface vlan20
+exit
+int range gig1/0/23
+description Trunk switchport kapcsolatok az IBM_CNTRL_PRJCTPNS terület felé, S0 és S1 eszköz felé. / Trunk switchport connections towards the area of IBM_CNTRL_PRJCTPNS, to device of S0 and S1.
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+vtp domain Projectenis.com
+vtp version 2
+vtp password evildynamo367
+vtp mode server
+spanning-tree mode rapid-pvst
+spanning-tree vlan 5 priority 4096
+spanning-tree vlan 10 priority 4096
+spanning-tree vlan 15 priority 4096
+spanning-tree vlan 20 priority 0
+ip domain-name Projectenis.com
+enable pass rocketeer63
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_S0
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_S0
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+description The devices administrative VLAN interface.
+ip add 192.168.30.162 255.255.255.224
+no sh
+exit
+int gig0/1
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+int gig0/1
+description Trunk connection towards the IBM_CNTRL_MLTLYRS0 device.
+exit
+int fa0/1
+switchport mode Access
+switchport access vlan 5
+no sh
+exit
+int fa0/8
+switchport mode Access
+switchport Access vlan 10
+no sh
+exit
+int fa0/15
+switchport mode access
+switchport access vlan 15
+no sh
+exit
+int fa0/20
+switchport mode access
+switchport access vlan 20
+no sh
+exit
+vtp domain Projectenis.com
+vtp version 2
+vtp password evildynamo367
+vtp mode server
+spanning-tree mode rapid-pvst
+spanning-tree vlan 5 priority 0
+spanning-tree vlan 10 priority 0
+spanning-tree vlan 15 priority 0
+spanning-tree vlan 20 priority 4096
+ip default-gateway 192.168.30.161
+ip domain-name Projectenis.com
+enable pass tadc529
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_SRVRR_S0
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_SRVRR_S0
+int vlan 1
+description The devices administrative interface.
+ip add 192.168.30.194 255.255.255.240
+no sh
+exit
+ip default-gateway 192.168.30.193
+ip domain-name Projectenis.com
+enable pass leaper87
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Servermanager521 password definitum521
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-
+---KUN
+VLSM	Kun	172.16.15.0/24
+	VLAN10	ADMIN		172.16.20.128/28
+	VLAN20	LINUX-TEAM	172.16.20.0/26
+	VLAN30	WINDOWS-TEAM	172.16.20.64/26
+	VLAN40	MANAGER		172.16.20.144/29
+Outside	80.90.125.32/30
+
+-x-R_KUN
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
+hostname R_KUN
+router ospf 1 
+router-id 3.3.3.3
+network 172.16.20.0 0.0.0.63 area 3
+network 172.16.20.64 0.0.0.63 area 3
+network 172.16.20.128 0.0.0.15 area 3
+network 172.16.20.144 0.0.0.7 area 3
+network 172.16.20.156 0.0.0.3 area 3
+passive-interface gig0/1.10
+passive-interface gig0/1.20
+passive-interface gig0/1.30
+passive-interface gig0/1.40
+passive-interface gig0/1
+exit
+int gig0/1.10
+description The administrative VLAN subnetworks subinterface of KUN.
+encapsulation dot1Q 10 native
+ip address 172.16.20.129 255.255.255.240
+exit
+int gig0/1.20
+description The subinterface for the VLAN subnetwork of the Linux team in KUN.
+encapsulation dot1Q 20
+ip address 172.16.20.1 255.255.255.192
+ip helper-address 192.168.30.199
+exit
+int gig0/1.30
+description The subinterface for the VLAN subnetwork of the Windows team in KUN.
+encapsulation dot1Q 30
+ip address 172.16.20.65 255.255.255.192
+ip helper-address 192.168.30.199
+exit
+int gig0/1.40
+description The subinterface for the VLAN subnetwork of the Managers in KUN.
+encapsulation dot1Q 40
+ip address 172.16.20.145 255.255.255.248
+ip helper-address 192.168.30.199
+exit
+int gig0/1
+no sh
+exit
+int gig0/3/0
+description Towards the site of the ISP and towards the sites of PRJCTNS.
+ip address 172.16.20.158 255.255.255.252
+no sh
+exit
+user Overlord839 password ibmadmin839
+username KUNadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+enable password enpass55
+ip domain-name Projectenis.com
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do write
+
+-x-SW_KUN_1
+en
+conf t
+hostname SW_KUN_1
+vtp domain Projectenis.com
+vtp password ibmkunpa55
+vtp version 2
+vtp mode client
+int gig0/1
+description Towards R_KUN, to ISP, and the different sites of Projectenis.
+switchport mode trunk 
+switchport trunk native vlan 10
+switchport trunk allowed vlan 10,20,30,40
+exit
+int vlan 10
+description The devices administrative VLAN interface.
+ip address 172.16.20.133 255.255.255.240
+no sh
+exit
+int gig0/2
+switchport mode Trunk
+switchport trunk native vlan 10
+switchport trunk allowed vlan 10,20,30,40
+no sh
+exit
+int fa0/21
+switchport mode access
+switchport access vlan 40
+no sh
+exit
+int fa0/11
+switchport mode access
+switchport access vlan 30
+no sh
+exit
+int fa0/1
+switchport mode access
+switchport access vlan 20
+no sh
+exit
+ip default-gateway 172.16.20.129
+user Overlord839 password ibmadmin839
+username KUNadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+enable password enpass55
+ip domain-name Projectenis.com
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+spanning-tree portfast bpduguard default
+spanning-tree mode rapid-pvst
+spanning-tree vlan 40 priority 0
+spanning-tree vlan 30 priority 0
+spanning-tree vlan 20 priority 0
+spanning-tree vlan 10 priority 4096
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do write
+
+-x-SW_KUN_A
+en
+conf t
+hostname SW_KUN_A
+vlan 10
+name ADMIN
+exit
+vlan 20
+name LINUX-TEAM
+exit
+vlan 30
+name WINDOWS-TEAM
+exit
+vlan 40
+name MANAGER
+exit
+vtp domain Projectenis.com
+vtp mode server
+vtp password ibmkunpa55
+vtp version 2
+int gig0/2
+description Trunk connection towards the SW_KUN_1 device.
+switchport mode trunk
+switchport trunk native vlan 10
+switchport trunk allowed vlan 10,20,30,40
+exit
+int vlan 10
+description The devices administrative VLAN interface.
+ip address 172.16.20.131 255.255.255.240
+no sh
+exit
+int range fa0/1-2
+description Access connections for administrative devices.
+switchport mode Access
+switchport Access vlan 10
+no sh
+exit
+spanning-tree portfast
+exit
+ip default-gateway 172.16.20.129
+user Overlord839 password ibmadmin839
+username KUNadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+enable password enpass55
+ip domain-name Projectenis.com
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+spanning-tree portfast bpduguard default
+spanning-tree mode rapid-pvst
+spanning-tree vlan 10 priority 0
+spanning-tree vlan 20 priority 0
+spanning-tree vlan 30 priority 0
+spanning-tree vlan 40 priority 4096
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do write
+
+-x-
+---ISP
+VLSM	ISP	80.90.125.0/24
+	ISP_MAIN	80.90.125.0/27
+	ISP-IBMCNTRL	80.90.125.32/30
+	ISP-ANDOR	80.90.125.36/30
+	ISP-KUN		80.90.125.40/30
+	ISP-ISPRF1	80.90.125.44/30
+	ISPRF1-R1_F1	80.90.125.48/30
+	ISPRF1-R2_F1	80.90.125.52/30
+	ISP-RMTWRKR	80.90.125.56/30
+
+-x-MAIN_ISP
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
+hostname MAIN_ISP
+int gig0/1/0
+description Towards the central site of IBM.
+ip address 80.90.125.34 255.255.255.252
+no sh
+exit
+int gig0/2/0
+description Towards the site of ANDOR.
+ip address 80.90.125.38 255.255.255.252
+no sh
+exit
+int gig0/0
+description Towards the site of KUN.
+ip address 80.90.125.41 255.255.255.252
+no sh
+exit
+int gig0/0/0
+description Towards the ISP_RF1 device, to the site of F1.
+ip address 80.90.125.45 255.255.255.252
+no sh
+exit
+int gig0/1
+description Towards the connection of the Remore workers.
+ip address 80.90.125.57 255.255.255.252
+no sh
+exit
+int gig0/2
+description Towards the inner site of ISP.
+ip address 80.90.125.1 255.255.255.224
+no sh
+exit
+exit
+router ospf 1
+router-id 200.200.200.200
+network 80.90.125.44 0.0.0.3 area 0
+network 80.90.125.32 0.0.0.3 area 0
+network 80.90.125.36 0.0.0.3 area 0
+network 80.90.125.40 0.0.0.3 area 0
+network 80.90.125.56 0.0.0.3 area 0
+Network 80.90.125.0 0.0.0.31 area 0
+passive-interface gig0/2
+exit
+enable password enpass55
+username ISPadmin password cortex999
+ip domain-name ISP.com
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-MAIN_ISP_SW
+en
+conf t
+hostname MAIN_ISP_SW
+enable password enpass55
+int vlan 1
+description Az eszköz adminisztratívan fenn tartott VLAN kapcsolata. / The devices administrative VLAN interface.
+ip add 80.90.125.2 255.255.255.224
+no sh
+exit
+ip default-gateway 80.90.125.1
+ip domain-name ISP.com
+enable password enpass55
+username ISPadmin password cortex999
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do write
+
+RCNTRL
+ip route 0.0.0.0 0.0.0.0 80.90.125.34
+int tunnel0
+description GRE Tunnel for the Site-To-Site VPN between IBM Central and Kun Sites.
+ip address 192.168.33.2 255.255.255.252
+tunnel soruce gig0/3/0
+tunnel destination 80.90.125.42
+no sh
+exit
+access-list 100 permit ip host 192.168.30.172 any
+access-list 100 deny ip 192.168.30.0 0.0.0.255 172.16.20.0 0.0.0.255
+access-list 100 permit ip 192.168.30.0 0.0.0.255 any
+ip nat inside source list 100 int g0/3/0 overload
+int range gig0/1/0, gig0/2/0, se0/0/0
+ip nat inside
+exit
+int gig0/3/0
+ip nat Outside
+exit
+crypto isakmp policy 10
+encryption aes
+hash sha
+authentication pre-share
+group 5
+lifetime 86400
+exit
+crypto isakmp key prjctpns071 address 80.90.125.42
+access-list 110 permit ip 192.168.30.0 0.0.0.255 172.16.20.0 0.0.0.255
+crypto map VPN-MAP 10 ipsec-isakmp
+set peer 80.90.125.42
+set transform-set GRE-IPSEC
+match address 110
+exit
+crypto ipsec transform-set GRE-IPSEC esp-aes esp-sha-hmac
+int gig0/3/0
+crypto VPN-MAP
+
+
+
+RKUN
+ip route 0.0.0.0 0.0.0.0 80.90.125.41
+int tunnel0
+ip address 192.168.33.1 255.255.255.252
+tunnel source gig0/3/0
+tunnel destination 80.90.125.33
+no sh
+exit
+access-list 100 permit ip host 172.16.20.132 any
+access-list 100 deny ip 172.16.20.0 0.0.0.255 192.168.30.0 0.0.0.255
+access-list 100 permit ip 192.168.1.0 0.0.0.255 any
+ip nat inside source list 100 int g0/3/0 overload
+int gig0/1
+ip nat inside
+exit
+int gig0/3/0
+ip nat Outside
+exit
+crypto isakmp policy 10 
+encryption aes
+hash sha
+authentication pre-share
+group 5
+lifetime 86400
+exit
+crypto isakmp key prjctpns071 address 80.90.125.33
+crypto ipsec transform-set GRE-IPSEC esp-aes esp-sha-hmac
+access-list 110 permit 172.16.20.0 0.0.0.255 192.168.30.0 0.0.0.255
+crypto map VPN-MAP 10 ipsec-isakmp
+set peer 80.90.125.33
+set transform-set GRE-IPSEC
+match address 110
+exit
+int g0/3/0
+crypto map VPN-MAP
