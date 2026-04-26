@@ -64,7 +64,7 @@ Admin logins&policies
 		Exception - ISPadmin - cortex999 - Admin of ISP site, has Access to their own territory, and nobody else does have Access to ISP like he does
 
 Backup DHCP default routers
-	ip helper-address 192.168.30.199
+	ip helper-address 80.90.125.33
 	KUN pools
 		LINUX-TEAM network 172.16.20.0 255.255.255.192
 		WINDOWS-TEAM network 172.16.20.64 255.255.255.192
@@ -100,21 +100,25 @@ hostname IBM_CNTRL_RTR0
 int gig0/0/0
 description IBM_CNTRL_MLTLYRS0 felé, az IBM_PRJCTNS területe felé. / Towards IBM_CNTRL_MLTLYRS0, to the area of IBM_PRCJTNS.
 ip add 192.168.30.217 255.255.255.252
+ip nat inside
 no sh
 exit
 int gig0/1/0
 description IBM_CNTRL_RTR1 felé, a Projectenis szerverszobájához. / Towards IBM_CNTRL_RTR1, to the server room of Projectenis.
 ip add 192.168.30.209 255.255.255.252
+ip nat inside
 no sh
 exit
 int se0/3/0
 description Egy tartalék kapcsolat IBM_CNTRL_RTR1 felé, a Projectenis szerverszobájához. / A backup connection to IBM_CNTRL_RTR1, to the server room of Projectenis.
 ip add 192.168.30.213 255.255.255.252
+ip nat inside
 no sh
 exit
 int gig0/2/0
 description Az ISP területe és a Projectenis telephelyei felé. / Towards the site of the ISP and towards the sites of PRJCTNS.
 ip add 80.90.125.33 255.255.255.252
+ip nat outside
 no sh
 exit
 router ospf 1
@@ -144,6 +148,16 @@ banner motd %This device is only accesable by registered authorized personnel wi
 
 access-list 1 permit 192.168.30.192 0.0.0.15
 ip nat inside source list 1 interface GigabitEthernet0/1/0 overload
+
+ip nat inside source static tcp 192.168.30.200 80 80.90.125.33 80
+ip nat inside source static tcp 192.168.30.200 443 80.90.125.33 443
+ip nat inside source static tcp 192.168.30.203 53 80.90.125.33 53
+ip nat inside source static udp 192.168.30.203 53 80.90.125.33 53
+ip nat inside source static tcp 192.168.30.204 21 80.90.125.33 21
+ip nat inside source static tcp 192.168.30.204 20 80.90.125.33 20
+ip nat inside source static udp 192.168.30.204 69 80.90.125.33 69
+ip nat inside source static udp 192.168.30.199 67 80.90.125.33 67
+
 do wr
 
 -x-IBM_CNTRL_RTR1
@@ -225,19 +239,19 @@ exit
 int vlan 5
 description Az IBM_CNTRL_PRJCTPNS első munkacsoportjának fenn tartott VLAN. / A dedicated VLAN for IBM_CNTRL_PRJCTPNS first workforce.
 ip add 192.168.30.1 255.255.255.192
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 no sh
 exit
 int vlan 10
 description Az IBM_CNTRL_PRJCTPNS második munkacsoportjának fenn tartott VLAN. / A dedicated VLAN for IBM_CNTR_PRJCTPNS second workforce.
 ip add 192.168.30.65 255.255.255.192
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 no sh
 exit
 int vlan 15
 description Az IBM_CNTRL_PRJCTPNS vezetőségének fenn tartott VLAN. / A dedicated VLAN for IBM_CNTRL_PRJCTPNS higher ups.
 ip add 192.168.30.129 255.255.255.224
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 no sh
 exit
 int vlan 20
@@ -914,7 +928,7 @@ int gig0/1.3
 description Az ANDOR első emeleti VLAN-hoz fenn tartott al-interface. / The first floor VLAN subinterface of ANDOR site.
 encapsulation dot1q 3
 ip add 172.16.15.1 255.255.255.192
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 ip nat inside
 no sh
 exit
@@ -922,7 +936,7 @@ int gig0/1.6
 description Az ANDOR második emeleti VLAN-hoz fenn tartott al-interface. / The second floor VLAN subinterface of ANDOR site.
 encapsulation dot1q 6
 ip add 172.16.15.65 255.255.255.192
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 ip nat inside
 no sh
 exit
@@ -930,7 +944,7 @@ int gig0/1.9
 description Az ANDOR földszinti VLAN-hoz fenn tartott al-interface. / The ground floor VLAN subinterface of ANDOR site.
 encapsulation dot1q 9
 ip add 172.16.15.129 255.255.255.224
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 ip nat inside
 no sh
 exit
@@ -1379,19 +1393,19 @@ int gig0/2.20
 description A KUN Linux munkacsapatnak fenn tartott VLAN al-interface. / The subinterface for the VLAN subnetwork of the Linux team in KUN.
 encapsulation dot1Q 20
 ip address 172.16.20.1 255.255.255.192
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 exit
 int gig0/2.30
 description A KUN Windows munkacsapatnak fenn tartott VLAN al-interface. / The subinterface for the VLAN subnetwork of the Windows team in KUN.
 encapsulation dot1Q 30
 ip address 172.16.20.65 255.255.255.192
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 exit
 int gig0/2.40
 description A KUN vezetőségének fenn tartott VLAN al-interface. / The subinterface for the VLAN subnetwork of the Managers in KUN.
 encapsulation dot1Q 40
 ip address 172.16.20.145 255.255.255.248
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 exit
 int gig0/2
 no sh
@@ -1825,7 +1839,7 @@ ip address 172.16.10.61 255.255.255.192
 standby 2 ip 172.16.10.1
 standby 2 preempt
 standby 2 priority 120
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 no sh
 exit
 int gig0/0.30
@@ -1835,7 +1849,7 @@ ip address 172.16.10.125 255.255.255.192
 standby 3 ip 172.16.10.65
 standby 3 preempt
 standby 3 priority 120
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 no sh
 exit
 int gig0/0.40
@@ -1845,7 +1859,7 @@ ip address 172.16.10.157 255.255.255.240
 standby 4 ip 172.16.10.145
 standby 4 preempt
 standby 4 priority 120
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 no sh
 exit
 int gig0/2/0
@@ -1947,7 +1961,7 @@ ip address 172.16.10.62 255.255.255.192
 standby 2 ip 172.16.10.1
 standby 2 preempt
 standby 2 priority 110
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 exit
 int gig0/0.30
 description Az F1 Windows munkacsapatnak fenn tartott VLAN al-interface a harmadik HSRP csoporton belül. / The subinterface inside the third HSRP group for the VLAN subnetwork of the Windows team in F1.
@@ -1956,7 +1970,7 @@ ip address 172.16.10.126 255.255.255.192
 standby 3 ip 172.16.10.65
 standby 3 preempt
 standby 3 priority 110
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 exit
 int gig0/0.40
 description Az F1 vezetőségének fenn tartott VLAN al-interface a negyedik HSRP csoporton belül. / The subinterface inside the fourth HSRP group for the VLAN subnetwork of the Higher ups in F1.
@@ -1965,7 +1979,7 @@ ip address 172.16.10.158 255.255.255.240
 standby 4 ip 172.16.10.145
 standby 4 preempt
 standby 4 priority 110
-ip helper-address 192.168.30.199
+ip helper-address 80.90.125.33
 exit
 int gig0/2/0
 description Az ISP területe és a Projectenis telephelyei felé. / Towards the site of the ISP and towards the sites of PRJCTNS.
