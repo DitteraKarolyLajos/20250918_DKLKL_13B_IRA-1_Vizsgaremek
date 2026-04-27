@@ -2693,604 +2693,961 @@ ip route 0.0.0.0 0.0.0.0 Dialer1
 
 do write
 
+
+
+
+
+
+
+
+
+
+
+
+
 -x-
+------x--------- IPv4 + IPv6 - Dualstack
 
-ACL
-	IBM_CNTRL
-		IBM_CNTRL_MLTLYRS0
-			4 vlan van, ebből az adminnak van joga kifele kommunikálni ping-el és ssh-val. Tehát az admin vlan-on kell ilyesmi fajta out forgalmat engedélyezni legfőképpen az admin host eszközöknek, még a többi printer, vagy switch nem engedélyezett ehhez. Valamint a maradék 3 VLAN-on szűrni kell hogy ne engedjen ki ilyesmi fajta kommunikációt, de mindent mást engedjen, valamint hogy ne basszogassák a többi admin-t. Senki sem basztathatja az ISP-t
-			ip access-list extended IBM_CNTRL_WRKFRC1_O
-			remark A központi első munkacsoport kifelé irányuló kommunikációjára szabályzat / Policies for the outward communication of the first central workforces.
-			deny icmp any any
-			permit ip any any
-			exit
-			int vlan 5
-			ip access-group IBM_CNTRL_WRKFRC1_O out
-			no sh
-			exit
-			ip access-list extended IBM_CNTRL_WRKFRC2_O
-			remark A központi második munkacsoport kifelé irányuló kommunikációjára szabályzat / Policies for the outward communication of the second central workforces.
-			deny icmp any any
-			permit ip any any
-			exit
-			int vlan 10
-			ip access-group IBM_CNTRL_WRKFRC2_O out
-			no sh
-			exit
-			ip access-list extended IBM_CNTRL_HGHRPS_O
-			remark A központi vezetőség kifelé irányuló kommunikációjára szabályzat / Policies for the outward communication of the first central workforces.
-			deny icmp any any
-			permit ip any any
-			exit
-			int vlan 15
-			ip access-group IBM_CNTRL_HGHRPS_O out
-			no sh
-			exit
-			ip access-list extended IBM_CNTRL_ADMIN_O
-			remark A központi adminisztratív munkacsoport kifelé irányuló kommunikációjára szabályzat / Policies for the outward communication of the central administrative workforces.
-			deny tcp host 192.168.30.172 80.90.125.0 0.0.0.255 eq 22
-			deny tcp host 192.168.30.173 80.90.125.0 0.0.0.255 eq 22
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			deny tcp any any eq 22
-			deny icmp host 192.168.30.172 80.90.125.0 0.0.0.255
-			deny icmp host 192.168.30.173 80.90.125.0 0.0.0.255
-			permit icmp host 192.168.30.172 any
-			permit icmp any host 192.168.30.172
-			permit icmp host 192.168.30.173 any
-			permit icmp any host 192.168.30.173
-			deny icmp any any
-			permit ip any any
-			exit
-			int vlan 20
-			ip access-group IBM_CNTRL_ADMIN_O out
-			no sh
-			exit
-			ip access-list extended SSH
-			remark Az eszközre vonatkozó SSH szabályzat. / The devices SSH policies.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			deny tcp any any eq 22
-			permit ip any any
-			exit
-			line vty 0 15
-			access-class SSH in
-			exit
-			...
-		IBM_CNTRL_RTR0
-			Mivel minden más helyen szűrve van hogy ki ping-het és ki nem, ezért itt nem szükséges ezt konfigurálni, rajta azt kell elérni, hogy a megfelelő személyek SSH-nak ide
-			...
-			ip access-list extended SSH
-			remark Az eszközre vonatkozó SSH szabályzat. / The devices SSH policies.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			deny tcp any any eq 22
-			permit ip any any
-			exit
-			line vty 0 15
-			access-class SSH in
-			exit
-			...
-		IBM_CNTRL_RTR1
-			Nem szabad a helyi gépeknek kifelé ping-ni, valamint SSH szabályzat
-			...
-			ip access-list extended IBM_CNTRL_SRVRR_O_MAIN
-			remark A központi szerver szobában lévő eszközök fő csatlakozáson keresztül menő kifelé irányuló kommunikációjára szabályzat. / Policies for the outward communication of the central server rooms devices trough the main connection.
-			deny tcp host 192.168.30.197 any eq 22
-			permit icmp host 192.168.30.197 host 192.168.30.210
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/1/0
-			ip access-group IBM_CNTRL_SRVRR_O_MAIN out
-			no sh
-			exit
-			ip access-list extended IBM_CNTR_SRVR_O_BACKUP
-			remark A központi szerver szobában lévő eszközök tartalék csatlakozáson keresztül menő kifelé irányuló kommunikációjára szabályzat. / Policies for the outward communication of the central server rooms devices trough the backup connection.
-			deny tcp host 192.168.30.197 any eq 22
-			permit icmp host 192.168.30.197 host 192.168.30.214
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/1/0
-			ip access-group IBM_CNTRL_SRVRR_O_BACKUP out
-			no sh
-			exit
-			ip access-list extended IBM_CNTRL_SRVRR_O_G00
-			remark A központi szerver szobában lévő eszközök felé irányuló gigabit interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the central server rooms devices trough the gigabit interface.
-			permit tcp host 192.168.30.197 any eq 22
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 192.168.30.197 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/0
-			ip access-group IBM_CNTRL_SRVRR_O_G00 out
-			no sh
-			exit
-			ip access-list extended IBM_CNTRL_SRVRR_O_G00
-			remark A központi szerver szobában lévő eszközök felé irányuló gigabit interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the central server rooms devices trough the gigabit interface.
-			permit tcp host 192.168.30.197 any eq 22
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			deny tcp any any eq 22
-			permit ip any any
-			exit
-			int gig0/0
-			ip access-group IBM_CNTRL_SRVRR_O_G00 out
-			no sh
-			exit
-			ip access-list extended SSH
-			remark Az eszközre vonatkozó SSH szabályzat. / The devices SSH policies.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 192.168.30.197 any eq 22
-			deny tcp any any eq 22
-			permit ip any any
-			exit
-			line vty 0 15
-			access-class SSH in
-			exit
-			...
+---------x--------- IBM_CNTR_PRJCTPNS
 
-	ANDOR
-		ANDOR_R
-			4 vlan van, ebből senkinek sincsen joga kifelé ping-ni vagy ssh-ni. Az Admin vlan-nak viszont van joga befele ping-ni és ssh-ni, ugyanezen jogokkal rendelkezik a központi kettő admin.
-			...
-			ip access-list extended ANDOR_R_O_G030
-			remark Az ANDOR telephelyen lévő eszközök kifelé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication outward of the ANDOR site trough the optic calbe interface.
-			deny tcp 172.16.15.0 0.0.0.63 any eq 22
-			deny tcp 172.16.15.64 0.0.0.63 any eq 22
-			deny tcp 172.16.15.128 0.0.0.31 any eq 22
-			deny tcp 172.16.15.160 0.0.0.31 any eq 22
-			deny icmp 172.16.15.0 0.0.0.63 any
-			deny icmp 172.16.15.64 0.0.0.63 any
-			deny icmp 172.16.15.128 0.0.0.31 any
-			deny icmp 172.16.15.160 0.0.0.31 any
-			permit ip any any
-			exit
-			int gig0/3/0
-			ip access-group ANDOR_R_O_G030 out
-			no sh
-			exit
-			ip access-list extended ANDOR_R_FRSTFLR_O_013
-			remark Az ANDOR telephelyen első emeletén lévő eszközök felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices on the first floor in ANDOR site trough the subinterface.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.15.174 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.15.174 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/1.3
-			ip access-group ANDOR_R_FRSTFLR_O_013 out
-			no sh
-			exit
-			ip access-list extended ANDOR_R_SCNDFLR_O_016
-			remark Az ANDOR telephelyen második emeletén lévő eszközök felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices on the second floor in ANDOR site trough the subinterface.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.15.174 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.15.174 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/1.6
-			ip access-group ANDOR_R_SCNDFLR_O_016 out
-			no sh
-			exit
-			ip access-list extended ANDOR_R_GRNDFLR_O_019
-			remark Az ANDOR telephelyen földszintjén lévő eszközök felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices on the ground floor in ANDOR site trough the subinterface.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.15.174 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.15.174 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/1.9
-			ip access-group ANDOR_R_GRNDFLR_O_019 out
-			no sh
-			exit
-			ip access-list extended ANDOR_R_ADMIN_O_0112
-			remark Az ANDOR telephelyen lévő adminisztratív eszközök felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the administrative devices trough the subinterface.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.15.174 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.15.174 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/1.12
-			ip access-group ANDOR_R_ADMIN_O_0112 out
-			no sh
-			exit
-			ip access-list extended SSH
-			remark Az eszközre vonatkozó SSH szabályzat. / The devices SSH policies.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.15.174 any eq 22
-			deny tcp any any eq 22
-			permit ip any any
-			exit
-			line vty 0 15
-			access-class SSH in
-			exit
-			...
-	KUN
-		R_KUN
-			4 vlan van, ebből senkinek sincsen joga kifelé ping-ni vagy ssh-ni. Az Admin vlan-nak viszont van joga befele ping-ni és ssh-ni, ugyanezen jogokkal rendelkezik a központi kettő admin.
-			...
-			ip access-list extended R_KUN_O_G030
-			remark A KUN telephelyen lévő eszközök kifelé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication outward of the KUN site trough the optic calbe interface.
-			deny tcp 172.16.20.0 0.0.0.63 any eq 22
-			deny tcp 172.16.20.64 0.0.0.63 any eq 22
-			deny tcp 172.16.20.128 0.0.0.15 any eq 22
-			deny tcp 172.16.20.144 0.0.0.7 any eq 22
-			deny icmp 172.16.20.0 0.0.0.63 any
-			deny icmp 172.16.20.64 0.0.0.63 any
-			deny icmp 172.16.20.128 0.0.0.15 any
-			deny icmp 172.16.20.144 0.0.0.7 any
-			permit ip any any
-			exit
-			int gig0/3/0
-			ip access-group R_KUN_O_G030 out
-			no sh
-			exit
-			ip access-list extended R_KUN_ADMIN_O_0210
-			remark A KUN telephelyen lévő adminisztratív eszközök felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the administrative devices trough the subinterface in KUN.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.132 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.20.132 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/2.10
-			ip access-group R_KUN_ADMIN_O_0210 out
-			no sh
-			exit
-			ip access-list extended R_KUN_ADMIN_O_0220
-			remark A KUN telephelyen lévő Linux csapat eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices inside the Linux team trough the subinterface in KUN.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.132 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.20.132 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/2.10
-			ip access-group R_KUN_ADMIN_O_0220 out
-			no sh
-			exit
-			ip access-list extended R_KUN_ADMIN_O_0230
-			remark A KUN telephelyen lévő Windows csapat eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices inside the Windows team trough the subinterface in KUN.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.132 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.20.132 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/2.30
-			ip access-group R_KUN_ADMIN_O_0230 out
-			no sh
-			exit
-			ip access-list extended R_KUN_ADMIN_O_0240
-			remark A KUN telephelyen lévő vezetőségnek az eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices of the management trough the subinterface in KUN.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.132 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.20.132 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/2.40
-			ip access-group R_KUN_ADMIN_O_0240 out
-			no sh
-			exit
-			ip access-list extended SSH
-			remark Az eszközre vonatkozó SSH szabályzat. / The devices SSH policies.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.20.132 any eq 22
-			deny tcp any any eq 22
-			permit ip any any
-			exit
-			line vty 0 15
-			access-class SSH in
-			exit
-			...
-	F1
-		4 vlan van, ebből senkinek sincsen joga kifelé ping-ni vagy ssh-ni. Az Admin vlan-nak viszont van joga befele ping-ni és ssh-ni, ugyanezen jogokkal rendelkezik a központi kettő admin.
-		R0_F1
-			...
-			ip access-list extended ISP_RF1_O_G020
-			remark Az ISP területében lévő eszközök F1 felé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards F1 site from the devices in ISP territory trough the optical cable interface. 
-			deny tcp 80.90.125.0 0.0.0.255 any eq 22
-			deny icmp 80.90.125.0 0.0.0.255 any
-			permit ip any any
-			exit
-			int gig0/2/0
-			ip access-group ISP_MAIN_O_G020 out
-			no sh
-			exit
-			ip access-list extended ISP_RF1_O_G030
-			remark Az ISP területében lévő eszközök F1 felé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards F1 site from the devices in ISP territory trough the optical cable interface. 
-			deny tcp 80.90.125.0 0.0.0.255 any eq 22
-			deny icmp 80.90.125.0 0.0.0.255 any
-			permit ip any any
-			exit
-			int gig0/3/0
-			ip access-group ISP_MAIN_O_G030 out
-			no sh
-			exit
-			ip access-list extended SSH
-			remark Az eszközre vonatkozó SSH szabályzat. / The devices SSH policies.
-			permit tcp host 80.90.125.29 any eq 22
-			deny tcp any any eq 22
-			permit ip any any
-			exit
-			line vty 0 15
-			access-class SSH in
-			exit
-			...
-		R1_F1
-			...
-			ip access-list extended R1_F1_O_G020
-			remark Az F1 telephelyen lévő eszközök kifelé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication outward of the F1 site trough the optic calbe interface.
-			deny tcp 172.16.10.0 0.0.0.63 any eq 22
-			deny tcp 172.16.10.64 0.0.0.63 any eq 22
-			deny tcp 172.16.10.128 0.0.0.15 any eq 22
-			deny tcp 172.16.10.144 0.0.0.7 any eq 22
-			deny icmp 172.16.10.0 0.0.0.63 any
-			deny icmp 172.16.10.64 0.0.0.63 any
-			deny icmp 172.16.10.128 0.0.0.15 any
-			deny icmp 172.16.10.144 0.0.0.7 any
-			permit ip any any
-			exit
-			int gig0/2/0
-			ip access-group R1_F1_O_G020 out
-			no sh
-			exit
-			ip access-list extended R1_F1_ADMIN_O_0010
-			remark Az F1 telephelyen lévő adminisztratív eszközök felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the administrative devices trough the subinterface in F1.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.10.137 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.10.137 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/0.10
-			ip access-group R1_F1_ADMIN_O_0010 out
-			no sh
-			exit
-			ip access-list extended R1_F1_LINUX_O_0020
-			remark Az F1 telephelyen lévő Linux csapat eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices inside the Linux team trough the subinterface in F1.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.10.137 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.10.137 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/0.10
-			ip access-group R1_F1_LINUX_O_0020 out
-			no sh
-			exit
-			ip access-list extended R1_F1_WINDOWS_O_0030
-			remark Az F1 telephelyen lévő Windows csapat eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices inside the Windows team trough the subinterface in F1.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.10.137 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.10.137 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/0.30
-			ip access-group R1_F1_WINDOWS_O_0030 out
-			no sh
-			exit
-			ip access-list extended R1_F1_MANAGEMENT_O_0040
-			remark Az F1 telephelyen lévő vezetőségnek az eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices of the management trough the subinterface in F1.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.10.137 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.10.137 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/0.40
-			ip access-group R1_F1_MANAGEMENT_O_0040 out
-			no sh
-			exit
-			ip access-list extended SSH
-			remark Az eszközre vonatkozó SSH szabályzat. / The devices SSH policies.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.10.137 any eq 22
-			deny tcp any any eq 22
-			permit ip any any
-			exit
-			line vty 0 15
-			access-class SSH in
-			exit
-			...
-		R2_F1
-			...
-			ip access-list extended R2_F1_O_G020
-			remark Az F1 telephelyen lévő eszközök kifelé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication outward of the F1 site trough the optic calbe interface.
-			deny tcp 172.16.10.0 0.0.0.63 any eq 22
-			deny tcp 172.16.10.64 0.0.0.63 any eq 22
-			deny tcp 172.16.10.128 0.0.0.15 any eq 22
-			deny tcp 172.16.10.144 0.0.0.7 any eq 22
-			deny icmp 172.16.10.0 0.0.0.63 any
-			deny icmp 172.16.10.64 0.0.0.63 any
-			deny icmp 172.16.10.128 0.0.0.15 any
-			deny icmp 172.16.10.144 0.0.0.7 any
-			permit ip any any
-			exit
-			int gig0/2/0
-			ip access-group R2_F1_O_G020 out
-			no sh
-			exit
-			ip access-list extended R2_F1_ADMIN_O_0010
-			remark Az F1 telephelyen lévő adminisztratív eszközök felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the administrative devices trough the subinterface in F1.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.10.137 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.10.137 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/0.10
-			ip access-group R2_F1_ADMIN_O_0010 out
-			no sh
-			exit
-			ip access-list extended R2_F1_LINUX_O_0020
-			remark Az F1 telephelyen lévő Linux csapat eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices inside the Linux team trough the subinterface in F1.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.10.137 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.10.137 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/0.10
-			ip access-group R2_F1_LINUX_O_0020 out
-			no sh
-			exit
-			ip access-list extended R2_F1_WINDOWS_O_0030
-			remark Az F1 telephelyen lévő Windows csapat eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices inside the Windows team trough the subinterface in F1.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.10.137 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.10.137 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/0.30
-			ip access-group R2_F1_WINDOWS_O_0030 out
-			no sh
-			exit
-			ip access-list extended R2_F1_MANAGEMENT_O_0040
-			remark Az F1 telephelyen lévő vezetőségnek az eszközei felé irányuló, az al-interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards the devices of the management trough the subinterface in F1.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.10.137 any eq 22
-			deny tcp any any eq 22
-			permit icmp host 192.168.30.172 any
-			permit icmp host 192.168.30.173 any
-			permit icmp host 172.16.10.137 any
-			deny icmp any any
-			permit ip any any
-			exit
-			int gig0/0.40
-			ip access-group R2_F1_MANAGEMENT_O_0040 out
-			no sh
-			exit
-			ip access-list extended SSH
-			remark Az eszközre vonatkozó SSH szabályzat. / The devices SSH policies.
-			permit tcp host 192.168.30.172 any eq 22
-			permit tcp host 192.168.30.173 any eq 22
-			permit tcp host 172.16.10.137 any eq 22
-			deny tcp any any eq 22
-			permit ip any any
-			exit
-			line vty 0 15
-			access-class SSH in
-			exit
-			...
-	ISP
-		ISP_MAIN
-			...
-			ip access-list extended ISP_MAIN_O_G010
-			remark Az ISP területében lévő eszközök IBM felé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards IBM central site from the devices in ISP territory trough the optical cable interface. 
-			deny tcp 80.90.125.0 0.0.0.255 any eq 22
-			deny icmp 80.90.125.0 0.0.0.255 any
-			permit ip any any
-			exit
-			int gig0/1/0
-			ip access-group ISP_MAIN_O_G010 out
-			no sh
-			exit
-			ip access-list extended ISP_MAIN_O_G020
-			remark Az ISP területében lévő eszközök ANDOR felé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards ANDOR site from the devices in ISP territory trough the optical cable interface. 
-			deny tcp 80.90.125.0 0.0.0.255 any eq 22
-			deny icmp 80.90.125.0 0.0.0.255 any
-			permit ip any any
-			exit
-			int gig0/2/0
-			ip access-group ISP_MAIN_O_G020 out
-			no sh
-			exit
-			ip access-list extended ISP_MAIN_O_G030
-			remark Az ISP területében lévő eszközök KUN felé irányuló, az optikai kábel interface-n keresztül menő kommunikációjára szabályzat. / Policies for the communication towards KUN site from the devices in ISP territory trough the optical cable interface. 
-			deny tcp 80.90.125.0 0.0.0.255 any eq 22
-			deny icmp 80.90.125.0 0.0.0.255 any
-			permit ip any any
-			exit
-			int gig0/3/0
-			ip access-group ISP_MAIN_O_G030 out
-			no sh
-			exit
-			ip access-list extended SSH
-			remark Az eszközre vonatkozó SSH szabályzat. / The devices SSH policies.
-			permit tcp host 80.90.125.29 any eq 22
-			deny tcp any any eq 22
-			permit ip any any
-			exit
-			line vty 0 15
-			access-class SSH in
-			exit
-			...
+-x-IBM_CNTRL_RTR0
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
+hostname IBM_CNTRL_RTR0
+ipv6 unicast-routing
+ipv6 router ospf 1
+router-id 10.10.10.10
+exit
+int gig0/0/0
+description IBM_CNTRL_MLTLYRS0 felé, az IBM_PRJCTNS területe felé. / Towards IBM_CNTRL_MLTLYRS0, to the area of IBM_PRCJTNS.
+ip add 192.168.30.217 255.255.255.252
+ipv6 address FE80::1 link-local
+ipv6 address 2001:DB8:FACA:4::1/64
+ipv6 ospf 1 area 1
+no sh
+exit
+int gig0/1/0
+description IBM_CNTRL_RTR1 felé, a Projectenis szerverszobájához. / Towards IBM_CNTRL_RTR1, to the server room of Projectenis.
+ip add 192.168.30.209 255.255.255.252
+ipv6 address FE80::1 link-local
+ipv6 address 2001:DB8:FACA:2::1/64
+ipv6 ospf 1 area 1
+no sh
+exit
+int se0/3/0
+description Egy tartalék kapcsolat IBM_CNTRL_RTR1 felé, a Projectenis szerverszobájához. / A backup connection to IBM_CNTRL_RTR1, to the server room of Projectenis.
+ip add 192.168.30.213 255.255.255.252
+ipv6 address FE80::1 link-local
+ipv6 address 2001:DB8:FACA:3::1/64
+ipv6 ospf 1 area 1
+no sh
+exit
+int gig0/2/0
+description Az ISP területe és a Projectenis telephelyei felé. / Towards the site of the ISP and towards the sites of PRJCTNS.
+ip add 80.90.125.33 255.255.255.252
+no sh
+exit
+router ospf 1
+router-id 10.10.10.10
+network 80.90.125.32 0.0.0.3 area 0
+network 192.168.30.212 0.0.0.3 area 1
+network 192.168.30.208 0.0.0.3 area 1
+network 192.168.30.216 0.0.0.3 area 1
+exit
+ip domain-name Projectenis.com
+enable pass leaper33
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-IBM_CNTRL_RTR1
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
+hostname IBM_CNTRL_RTR1
+ipv6 unicast-routing
+ipv6 router ospf 1
+router-id 9.9.9.9
+passive-interface gig0/0
+exit
+int gig0/1/0
+description Az IBM_CNTRL_RTR0 felé, az ISP, többi telephely és az IBM_CNTRL terület felé. / Towards IBM_CNTRL_RTR0, which leads to ISP, the other sites of Projectenis and to IBM_CNTRL.
+ip add 192.168.30.210 255.255.255.252
+ipv6 address FE80::2 link-local
+ipv6 address 2001:DB8:FACA:2::2/64
+ipv6 ospf 1 area 1
+no sh
+exit
+int se0/3/0
+description Egy tartalék kapcsolat IBM_CNTRL_RTR0 felé, az ISP, valamint a Projectenis többi telephelye és az IBM_CNTRL terület felé. / A backup connection towards IBM_CNTRL_RTR0, which leads to ISP, the other sites of Projectenis and to IBM_CNTRL.
+ip add 192.168.30.214 255.255.255.252
+ipv6 address FE80::2 link-local
+ipv6 address 2001:DB8:FACA:3::2/64
+ipv6 ospf 1 area 1
+no sh
+exit
+int gig0/0
+description A Projectenis szerverszobája felé. / Towards the server room of Projectenis.
+ip add 192.168.30.193 255.255.255.240
+ipv6 address FE80::1 link-local
+ipv6 address 2001:DB8:FACA:1::1/64
+ipv6 ospf 1 area 1
+no sh
+exit
+router ospf 1
+router-id 9.9.9.9
+Network 192.168.30.192 0.0.0.15 area 1
+Network 192.168.30.208 0.0.0.3 area 1
+Network 192.168.30.212 0.0.0.3 area 1
+passive-interface gig0/0
+exit
+ip domain-name Projectenis.com
+enable pass leaper25
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Servermanager521 password definitum521
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-IBM_CNTRL_MLTLYRS0
+en
+conf t
+hostname IBM_CNTRL_MLTLYRS0
+ipv6 unicast-routing
+ipv6 router ospf 1
+router-id 8.8.8.8
+passive-interface vlan5
+passive-interface vlan10
+passive-interface vlan15
+passive-interface vlan20
+exit
+ip routing
+int gig1/1/4
+no switchport
+ip add 192.168.30.218 255.255.255.252
+ipv6 address FE80::2 link-local
+ipv6 address 2001:DB8:FACA:4::2/64
+ipv6 ospf 1 area 1
+no sh
+description IBM_CNTRL_RTR0 felé, az ISP, Projectenis többi telephelye és a szerverszoba felé. / Towards IBM_CNTRL_RTR0, to ISP, and the server room and different sites of Projectenis.
+exit
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 5
+description Az IBM_CNTRL_PRJCTPNS első munkacsoportjának fenn tartott VLAN. / A dedicated VLAN for IBM_CNTRL_PRJCTPNS first workforce.
+ip add 192.168.30.1 255.255.255.192
+ip helper-address 192.168.30.199
+ipv6 address FE80::1 link-local
+ipv6 address 2001:DB8:FACA:5::1/64
+ipv6 nd managed-config-flag
+ipv6 dhcp server WRKFRC1v6
+ipv6 ospf 1 area 1
+no sh
+exit
+int vlan 10
+description Az IBM_CNTRL_PRJCTPNS második munkacsoportjának fenn tartott VLAN. / A dedicated VLAN for IBM_CNTR_PRJCTPNS second workforce.
+ip add 192.168.30.65 255.255.255.192
+ip helper-address 192.168.30.199
+ipv6 address FE80::1 link-local
+ipv6 address 2001:DB8:FACA:10::1/64
+ipv6 nd managed-config-flag
+ipv6 dhcp server WRKFRC2v6
+ipv6 ospf 1 area 1
+no sh
+exit
+int vlan 15
+description Az IBM_CNTRL_PRJCTPNS vezetőségének fenn tartott VLAN. / A dedicated VLAN for IBM_CNTRL_PRJCTPNS higher ups.
+ip add 192.168.30.129 255.255.255.224
+ip helper-address 192.168.30.199
+ipv6 address FE80::1 link-local
+ipv6 address 2001:DB8:FACA:15::1/64
+ipv6 nd managed-config-flag
+ipv6 dhcp server HGHRPSv6
+ipv6 ospf 1 area 1
+no sh
+exit
+int vlan 20
+description Az IBM_CNTRL_PRJCTPNS adminisztratív VLAN alhálózata. / The administrative VLAN subnetwork of IBM_CNTRL_PRJCTPNS.
+ip add 192.168.30.161 255.255.255.224
+ipv6 address FE80::1 link-local
+ipv6 address 2001:DB8:FACA:20::1/64
+ipv6 ospf 1 area 1
+no sh
+exit
+ipv6 dhcp pool WRKFRC1v6
+address prefix 2001:DB8:FACA:5::/64
+dns-server 2001:DB8:FACA:1::203
+domain-name Projectenis.com
+exit
+ipv6 dhcp pool WRKFRC2v6
+address prefix 2001:DB8:FACA:10::/64
+dns-server 2001:DB8:FACA:1::203
+domain-name Projectenis.com
+exit
+ipv6 dhcp pool HGHRPSv6
+address prefix 2001:DB8:FACA:15::/64
+dns-server 2001:DB8:FACA:1::203
+domain-name Projectenis.com
+exit
+router ospf 1
+router-id 8.8.8.8
+Network 192.168.30.216 0.0.0.3 area 1
+Network 192.168.30.0 0.0.0.63 area 1
+Network 192.168.30.64 0.0.0.63 area 1
+Network 192.168.30.128 0.0.0.31 area 1
+Network 192.168.30.160 0.0.0.31 area 1
+passive-interface vlan5
+passive-interface vlan10
+passive-interface vlan15
+passive-interface vlan20
+exit
+int range gig1/0/23-24
+description Trunk switchport kapcsolatok az IBM_CNTRL_PRJCTPNS terület felé, S0 és S1 eszköz felé. / Trunk switchport connections towards the area of IBM_CNTRL_PRJCTPNS, to device of S0 and S1.
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+vtp domain Projectenis.com
+vtp version 2
+vtp password evildynamo367
+vtp mode server
+spanning-tree mode rapid-pvst
+spanning-tree vlan 5 priority 4096
+spanning-tree vlan 10 priority 4096
+spanning-tree vlan 15 priority 4096
+spanning-tree vlan 20 priority 0
+ip domain-name Projectenis.com
+enable pass rocketeer63
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_S0
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_S0
+sdm prefer dual-ipv4-and-ipv6 default
+do write
+do reload
+
+en
+conf t
+ipv6 unicast-routing
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+description Az eszköz adminisztratívan fenn tartott VLAN kapcsolata. / The devices administrative VLAN interface.
+ip add 192.168.30.162 255.255.255.224
+ipv6 address FE80::2 link-local
+ipv6 address 2001:DB8:FACA:20::2/64
+no sh
+exit
+int range fa0/21-24, gig0/1
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+int fa0/21
+description Az IBM_CNTRL_PRJCTPNS_S1 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S1 device.
+exit
+int fa0/22
+description Az IBM_CNTRL_PRJCTPNS_S3 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S3 device.
+exit
+int fa0/23
+description Az IBM_CNTRL_PRJCTPNS_S4 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S4 device.
+exit
+int fa0/24
+description Az IBM_CNTRL_PRJCTPNS_S5 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S5 device.
+exit
+int gig0/1
+description Az IBM_CNTRL_MLTLYRS0 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_MLTLYRS0 device.
+exit
+vtp domain Projectenis.com
+vtp version 2
+vtp password evildynamo367
+vtp mode server
+spanning-tree mode rapid-pvst
+spanning-tree vlan 5 priority 8192
+spanning-tree vlan 10 priority 8192
+spanning-tree vlan 15 priority 12288
+spanning-tree vlan 20 priority 4096
+ip default-gateway 192.168.30.161
+ip domain-name Projectenis.com
+enable pass tadc529
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x- IBM_CNTRL_PRJCTPNS_S1
+en
+conf t
+sdm prefer dual-ipv4-and-ipv6 default
+do w
+do reload
+
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_S1
+ipv6 unicast-routing
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+description Az eszköz adminisztratívan fenn tartott VLAN kapcsolata. / The devices administrative VLAN interface.
+ip add 192.168.30.163 255.255.255.224
+ipv6 address FE80::3 link-local
+ipv6 address 2001:DB8:FACA:20::3/64
+no sh
+exit
+int range gig0/1, fa0/21-24
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+int fa0/21
+description Az IBM_CNTRL_PRJCTPNS_S2 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S2 device.
+exit
+int fa0/22
+description Az IBM_CNTRL_PRJCTPNS_S3 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S3 device.
+exit
+int fa0/23
+description Az IBM_CNTRL_PRJCTPNS_S4 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S4 device.
+exit
+int fa0/24
+description Az IBM_CNTRL_PRJCTPNS_S0 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S0 device.
+exit
+int gig0/1
+description Az IBM_CNTRL_MLTLYRS0 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_MLTLYRS0 device.
+exit
+vtp domain Projectenis.com
+vtp version 2
+vtp password evildynamo367
+vtp mode server
+spanning-tree mode rapid-pvst
+spanning-tree vlan 5 priority 12288
+spanning-tree vlan 10 priority 12288
+spanning-tree vlan 15 priority 16384
+spanning-tree vlan 20 priority 8192
+ip default-gateway 192.168.30.161
+ip domain-name Projectenis.com
+enable pass tadc786
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_S2
+en
+conf t
+sdm prefer dual-ipv4-and-ipv6 default
+do w
+do reload
+
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_S2
+ipv6 unicast-routing
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+description Az eszköz adminisztratívan fenn tartott VLAN kapcsolata. / The devices administrative VLAN interface.
+ip add 192.168.30.164 255.255.255.224
+ipv6 address FE80::4
+ipv6 address 2001:DB8:FACA:20::4/64
+no sh
+exit
+int range fa0/21-24
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+int range fa0/11-15
+description Access kapcsolatok a vezetőségnek. / Access connections to the higher ups.
+switchport mode access
+switchport access vlan 15
+no sh
+exit
+int range fa0/16-20
+description Access kapcsolatok adminisztratív eszközöknek. / Access connections for administrative devices.
+switchport mode access
+switchport access vlan 20
+no sh
+exit
+int range fa0/11-20
+spanning-tree portfast
+exit
+int fa0/21
+description Az IBM_CNTRL_PRJCTPNS_S3 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S3 device.
+exit
+int fa0/22
+description Az IBM_CNTRL_PRJCTPNS_S5 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S5 device.
+exit
+int fa0/23
+description Az IBM_CNTRL_PRJCTPNS_S1 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S1 device.
+exit
+vtp domain Projectenis.com
+vtp version 2
+vtp password evildynamo367
+vtp mode client
+spanning-tree portfast bpduguard default
+spanning-tree mode rapid-pvst
+spanning-tree vlan 5 priority 16384
+spanning-tree vlan 10 priority 16384
+spanning-tree vlan 15 priority 0
+spanning-tree vlan 20 priority 12288
+ip default-gateway 192.168.30.161
+ip domain-name Projectenis.com
+enable pass tadc549
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_S3
+en
+conf t
+sdm prefer dual-ipv4-and-ipv6 default
+do w
+do reload
+
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_S3
+ipv6 unicast-routing
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+description Az eszköz adminisztratívan fenn tartott VLAN kapcsolata. / The devices administrative VLAN interface.
+ip add 192.168.30.165 255.255.255.224
+ipv6 address FE80::5
+ipv6 address 2001:DB8:FACA:20::5/64
+no sh
+exit
+int range fa0/21-24
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+int range fa0/1-5
+description Access kapcsolatok az első munkacsoportnak. / Access connections for the first workforce. 
+switchport mode Access
+switchport Access vlan 5
+no sh
+exit
+int range fa0/6-10
+description Access kapcsolatok a második munkacsoportnak. / Access connections for the second workforce.
+switchport mode Access
+switchport Access vlan 10
+no sh
+exit
+int range fa0/11-15
+description Access kapcsolatok a vezetőségnek. / Access connections to the higher ups.
+switchport mode access
+switchport access vlan 15
+no sh
+exit
+int range fa0/16-20
+description Access kapcsolatok adminisztratív eszközöknek. / Access connections for administrative devices.
+switchport mode access
+switchport access vlan 20
+no sh
+exit
+int fa0/21
+description Az IBM_CNTRL_PRJCTPNS_S2 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S2 device.
+exit
+int fa0/22
+description Az IBM_CNTRL_PRJCTPNS_S4 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S4 device.
+exit
+int fa0/23
+description Az IBM_CNTRL_PRJCTPNS_S1 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S1 device.
+exit
+int fa0/24
+description Az IBM_CNTRL_PRJCTPNS_S0 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S0 device.
+exit
+int range fa0/1-20
+spanning-tree portfast
+exit
+vtp domain Projectenis.com
+vtp version 2
+vtp password evildynamo367
+vtp mode client
+spanning-tree portfast bpduguard default
+spanning-tree mode rapid-pvst
+spanning-tree vlan 5 priority 20480
+spanning-tree vlan 10 priority 0
+spanning-tree vlan 15 priority 20480
+spanning-tree vlan 20 priority 16384
+ip default-gateway 192.168.30.161
+ip domain-name Projectenis.com
+enable pass tadc721
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_S4
+en
+conf t
+sdm prefer dual-ipv4-and-ipv6 default
+do w
+do reload
+
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_S4
+ipv6 unicast-routing
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+description Az eszköz adminisztratívan fenn tartott VLAN kapcsolata. / The devices administrative VLAN interface.
+ip add 192.168.30.166 255.255.255.224
+ipv6 address FE80::6
+ipv6 address 2001:DB8:FACA:20::6/64
+no sh
+exit
+int range fa0/21-24
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+int range fa0/1-5
+description Access kapcsolatok az első munkacsoportnak. / Access connections for the first workforce. 
+switchport mode Access
+switchport Access vlan 5
+no sh
+exit
+int range fa0/6-10
+description Access kapcsolatok a második munkacsoportnak. / Access connections for the second workforce.
+switchport mode Access
+switchport Access vlan 10
+no sh
+exit
+int range fa0/11-15
+description Access kapcsolatok a vezetőségnek. / Access connections to the higher ups.
+switchport mode access
+switchport access vlan 15
+no sh
+exit
+int range fa0/16-20
+description Access kapcsolatok adminisztratív eszközöknek. / Access connections for administrative devices.
+switchport mode access
+switchport access vlan 20
+no sh
+exit
+int fa0/21
+description Az IBM_CNTRL_PRJCTPNS_S5 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S5 device.
+exit
+int fa0/22
+description Az IBM_CNTRL_PRJCTPNS_S3 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S3 device.
+Exit
+int fa0/23
+description Az IBM_CNTRL_PRJCTPNS_S1 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S1 device.
+exit
+int fa0/24
+description Az IBM_CNTRL_PRJCTPNS_S0 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S0 device.
+exit
+int range fa0/1-20
+spanning-tree portfast
+exit
+vtp domain Projectenis.com
+vtp version 2
+vtp password evildynamo367
+vtp mode client
+spanning-tree portfast bpduguard default
+spanning-tree mode rapid-pvst
+spanning-tree vlan 5 priority 0
+spanning-tree vlan 10 priority 20480
+spanning-tree vlan 15 priority 24576
+spanning-tree vlan 20 priority 20480
+ip default-gateway 192.168.30.161
+ip domain-name Projectenis.com
+enable pass tadc935
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_S5
+en
+conf t
+sdm prefer dual-ipv4-and-ipv6 default
+do w
+do reload
+
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_S5
+ipv6 unicast-routing
+vlan 5
+name WRKFRC1
+exit
+vlan 10
+name WRKFRC2
+exit
+vlan 15
+name HGHRPS
+exit
+vlan 20
+name ADMIN
+exit
+int vlan 20
+description Az eszköz adminisztratívan fenn tartott VLAN kapcsolata. / The devices administrative VLAN interface.
+ip add 192.168.30.167 255.255.255.224
+ipv6 address FE80::7
+ipv6 address 2001:DB8:FACA:20::7/64
+no sh
+exit
+int range fa0/21-24
+switchport mode trunk
+switchport trunk native vlan 20
+switchport trunk allowed vlan 5,10,15,20
+no sh
+exit
+int range fa0/11-15
+description Access kapcsolatok a vezetőségnek. / Access connections to the higher ups.
+switchport mode access
+switchport access vlan 15
+no sh
+exit
+int range fa0/16-20
+description Access kapcsolatok adminisztratív eszközöknek. / Access connections for administrative devices.
+switchport mode access
+switchport access vlan 20
+no sh
+exit
+int fa0/21
+description Az IBM_CNTRL_PRJCTPNS_S4 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S4 device.
+exit
+int fa0/22
+description Az IBM_CNTRL_PRJCTPNS_S2 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S2 device.
+exit
+int fa0/24
+description Az IBM_CNTRL_PRJCTPNS_S0 eszköz felé Trunk kapcsolat. / Trunk connection towards the IBM_CNTRL_PRJCTPNS_S0 device.
+exit
+int range fa0/11-20
+spanning-tree portfast
+exit
+vtp domain Projectenis.com
+vtp version 2
+vtp password evildynamo367
+vtp mode client
+spanning-tree portfast bpduguard default
+spanning-tree mode rapid-pvst
+spanning-tree vlan 5 priority 24576
+spanning-tree vlan 10 priority 24576
+spanning-tree vlan 15 priority 8192
+spanning-tree vlan 20 priority 24576
+ip default-gateway 192.168.30.161
+ip domain-name Projectenis.com
+enable pass tadc486
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_SRVRR_S0
+en
+conf t
+sdm prefer dual-ipv4-and-ipv6 default
+do w
+do reload
+
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_SRVRR_S0
+ipv6 unicast-routing
+int vlan 1
+description Az eszköz adminisztratívan fenn tartott kapcsolata. / The devices administrative interface.
+ip add 192.168.30.194 255.255.255.240
+ipv6 address FE80::194
+ipv6 address 2001:DB8:FACA:1::194/64
+no sh
+exit
+ip default-gateway 192.168.30.193
+ip domain-name Projectenis.com
+enable pass leaper87
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Servermanager521 password definitum521
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_SRVRR_S1
+en
+conf t
+sdm prefer dual-ipv4-and-ipv6 default
+do w
+do reload
+
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_SRVRR_S1
+ipv6 unicast-routing
+int vlan 1
+description Az eszköz adminisztratívan fenn tartott kapcsolata. / The devices administrative interface.
+ip add 192.168.30.195 255.255.255.240
+ipv6 address FE80::195
+ipv6 address 2001:DB8:FACA:1::195/64
+no sh
+exit
+ip default-gateway 192.168.30.193
+ip domain-name Projectenis.com
+enable pass leaper65
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Servermanager521 password definitum521
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
+-x-IBM_CNTRL_PRJCTPNS_SRVRR_S2
+en
+conf t
+sdm prefer dual-ipv4-and-ipv6 default
+do w
+do reload
+
+en
+conf t
+hostname IBM_CNTRL_PRJCTPNS_SRVRR_S2
+ipv6 unicast-routing
+int vlan 1
+description Az eszköz adminisztratívan fenn tartott kapcsolata. / The devices administrative interface.
+ip add 192.168.30.196 255.255.255.240
+ipv6 address FE80::196
+ipv6 address 2001:DB8:FACA:1::196/64
+no sh
+exit
+ip default-gateway 192.168.30.193
+ip domain-name Projectenis.com
+enable pass leaper47
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Servermanager521 password definitum521
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do wr
+
