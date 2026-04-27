@@ -1,0 +1,225 @@
+-x-R0_F1
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
+hostname R0_F1
+username MAIN_ISP password pppno3L0l
+int gig0/2/0
+description Az R1_F1 eszköz felé, az F1 telephely felé. / Towards the R1_F1 device, to the site of F1.
+ip address 80.90.125.49 255.255.255.252
+no sh
+exit
+int se0/1/0
+description A MAIN_ISP eszköz felé, az ISP területéhez és a Projectenis többi telephelyeihez. / Towards the MAIN_ISP device, to the sites of the inner ISP territory and Projectenis.
+ip address 80.90.125.46 255.255.255.252
+encapsulation ppp
+ppp authentication chap
+no sh
+exit
+int gig0/3/0
+description Az R2_F1 eszköz felé, az F1 telephely felé. / Towards the R2_F1 device, to the site of F1.
+ip address 80.90.125.53 255.255.255.252
+no sh
+exit
+router ospf 1
+router-id 198.198.198.198
+network 80.90.125.48 0.0.0.3 area 0
+network 80.90.125.52 0.0.0.3 area 0
+network 80.90.125.44 0.0.0.3 area 0
+exit
+username ISPadmin password cortex999
+enable password enpass55
+ip domain-name ISP.com
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do write
+
+
+
+
+-x-MAIN_ISP
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
+hostname MAIN_ISP
+username R0_F1 password pppno3L0l
+int gig0/1/0
+description Az IBM központi telephely felé. / Towards the central site of IBM.
+ip address 80.90.125.34 255.255.255.252
+no sh
+exit
+int gig0/2/0
+description Az ANDOR telephely felé. / Towards the site of ANDOR.
+ip address 80.90.125.38 255.255.255.252
+no sh
+exit
+int gig0/0
+description A KUN telephely felé. / Towards the site of KUN.
+ip address 80.90.125.41 255.255.255.252
+no sh
+exit
+int se0/3/0
+description Az ISP_RF1 eszköz felé, az F1 telephely felé. / Towards the ISP_RF1 device, to the site of F1.
+ip address 80.90.125.45 255.255.255.252
+encapsulation ppp
+ppp authentication chap
+no sh
+exit
+int gig0/1
+description A távmunkások kapcsolata felé. / Towards the connection of the Remore workers.
+ip address 80.90.125.57 255.255.255.252
+no sh
+exit
+int gig0/2
+description Az ISP belső területe felé. / Towards the inner site of ISP.
+ip address 80.90.125.1 255.255.255.224
+no sh
+exit
+ip dhcp excluded-address 80.90.125.57
+ip dhcp pool IBM_TAV
+network 80.90.125.56 255.255.255.252
+default-router 80.90.125.57
+dns-server 192.168.30.198
+exit
+router ospf 1
+router-id 200.200.200.200
+network 80.90.125.44 0.0.0.3 area 0
+network 80.90.125.32 0.0.0.3 area 0
+network 80.90.125.36 0.0.0.3 area 0
+network 80.90.125.40 0.0.0.3 area 0
+network 80.90.125.56 0.0.0.3 area 0
+Network 80.90.125.0 0.0.0.31 area 0
+passive-interface gig0/2
+exit
+enable password enpass55
+username ISPadmin password cortex999
+ip domain-name ISP.com
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+
+
+bba-group pppoe global
+virtual-template 1
+exit
+username MAIN_ISP password ispAuth1234
+ip local pool PPP_POOL 80.90.125.58 80.90.125.58
+aaa new-model
+aaa authentication ppp default local
+interface Virtual-Template1
+ip unnumbered gig0/1
+peer default ip address pool PPP_POOL
+ppp authentication chap
+exit
+int gig0/1
+pppoe enable
+no sh
+exit
+
+
+do write
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-x-R_TAV
+en
+conf t
+hostname R_TAV
+int vlan 10
+description A Projectenis távmunkásainak fenn tartott VLAN. / A dedicated VLAN for the remote workers of Projectenis.
+ip address 192.168.100.1 255.255.255.0
+ip nat inside
+no sh
+exit
+int gig0/0
+description Az ISP területe felé DSL modem-en keresztül. / Towards the ISP trough a DSL modem device.
+ip address dhcp
+ip nat outside
+no sh
+exit
+int range fa 0/1/0-3
+switchport mode access
+switchport access vlan 10
+spanning-tree portfast
+no sh
+exit
+ip dhcp excluded-address 192.168.100.1
+ip dhcp pool TAVMUNKAS
+network 192.168.100.0 255.255.255.0
+default-router 192.168.100.1
+dns-server 192.168.30.196
+domain-name Projectenis.com
+exit
+ip domain-name Projectenis.com
+access-list 1 permit 192.168.100.0 0.0.0.255
+ip nat inside source list 1 interface gig0/0 overload
+banner motd % This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+
+
+username MAIN_ISP password ispAuth1234
+interface Dialer1
+ip address negotiated
+encapsulation ppp
+dialer pool 1
+ppp chap hostname MAIN_ISP
+ppp chap password ispAuth1234
+no sh
+exit
+int gig 0/0
+no ip address
+pppoe enable
+pppoe-client dial-pool-number 1
+no sh
+exit
+ip route 0.0.0.0 0.0.0.0 Dialer1
+
+
+do write
