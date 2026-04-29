@@ -1309,59 +1309,6 @@ VLSM	Kun	172.16.15.0/24
 	VLAN40	MANAGER		172.16.20.144/29
 Outside	80.90.125.32/30
 
--x-ASA_KUN
-en
-
-conf t
-hostname ASAKUN
-enable password asaKun3
-username Kunsas password Eagl3
-int gig1/1
-ip address 172.16.20.157 255.255.255.252
-nameif INSIDE
-security-level 100
-no sh
-exit
-int gig1/2
-ip address 80.90.125.42 255.255.255.252
-nameif OUTSIDE
-security-level 0
-no sh
-exit
-aaa authentication ssh console LOCAL
-crypto key generate rsa modulus 1024
-yes
-ssh 172.16.20.132 255.255.255.255 INSIDE
-ssh 80.90.125.33 255.255.255.255 OUTSIDE
-ssh timeout 5
-router ospf 1
-router-id 6.6.6.6
-network 80.90.125.40 255.255.255.252 area 0
-network 172.16.20.156 255.255.255.252 area 3
-exit
-
-access-list IBM-2-KUN extended permit icmp host 192.168.30.197 any
-access-list IBM-2-KUN extended permit icmp host 80.90.125.33 any
-access-list IBM-2-KUN extended permit udp host 80.90.125.33 any
-access-list IBM-2-KUN extended permit tcp host 80.90.125.33 any
-access-list IBM-2-KUN extended permit udp host 192.168.30.197 any
-access-list IBM-2-KUN extended permit tcp host 192.168.30.197 any
-
-access-list KUN-2-ANY extended permit tcp any any eq www
-access-list KUN-2-ANY extended permit tcp any any eq 8080
-access-list KUN-2-ANY extended permit tcp any any eq domain
-access-list KUN-2-ANY extended permit udp any any eq domain
-
-access-list KUN-2-ANY extended permit udp any host 80.90.125.33 eq 67
-access-list KUN-2-ANY extended permit udp any host 80.90.125.33 eq 68
-access-list KUN-2-ANY extended permit udp any host 80.90.125.33 eq 53
-access-list KUN-2-ANY extended permit tcp any host 80.90.125.33 eq 53
-
-
-access-group IBM-2-KUN in interface OUTSIDE 
-access-group KUN-2-ANY in interface INSIDE
-wr mem
-
 
 -x-R_KUN
 en
@@ -1380,7 +1327,7 @@ network 172.16.20.0 0.0.0.63 area 3
 network 172.16.20.64 0.0.0.63 area 3
 network 172.16.20.128 0.0.0.15 area 3
 network 172.16.20.144 0.0.0.7 area 3
-network 172.16.20.156 0.0.0.3 area 3
+network 80.90.125.40 0.0.0.3 area 0
 passive-interface gig0/2.10
 passive-interface gig0/2.20
 passive-interface gig0/2.30
@@ -1415,7 +1362,7 @@ no sh
 exit
 int gig0/1
 description Az ISP területe és a Projectenis telephelyei felé. / Towards the site of the ISP and towards the sites of PRJCTNS.
-ip address 172.16.20.158 255.255.255.252
+ip address 80.90.125.42 255.255.255.252
 no sh
 exit
 user Overlord839 password ibmadmin839
