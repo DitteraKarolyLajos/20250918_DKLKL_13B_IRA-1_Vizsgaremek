@@ -1,0 +1,330 @@
+-x-ANDOR_R
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
+hostname ANDOR_R
+zone security INSIDE
+exit
+zone security OUTSIDE
+exit
+int gig0/3/0
+description Az ISP területe és a Projectenis telephelyei felé. / Towards the site of the ISP and towards the sites of PRJCTNS.
+ip add 80.90.125.37 255.255.255.252
+ip nat outside
+zone-member security OUTSIDE
+no sh
+exit
+int gig0/1.3
+description Az ANDOR első emeleti VLAN-hoz fenn tartott al-interface. / The first floor VLAN subinterface of ANDOR site.
+encapsulation dot1q 3
+ip add 172.16.15.1 255.255.255.192
+ip helper-address 80.90.125.33
+ip nat inside
+no sh
+exit
+int gig0/1.6
+description Az ANDOR második emeleti VLAN-hoz fenn tartott al-interface. / The second floor VLAN subinterface of ANDOR site.
+encapsulation dot1q 6
+ip add 172.16.15.65 255.255.255.192
+ip helper-address 80.90.125.33
+ip nat inside
+no sh
+exit
+int gig0/1.9
+description Az ANDOR földszinti VLAN-hoz fenn tartott al-interface. / The ground floor VLAN subinterface of ANDOR site.
+encapsulation dot1q 9
+ip add 172.16.15.129 255.255.255.224
+ip helper-address 80.90.125.33
+ip nat inside
+no sh
+exit
+int gig0/1.12
+description Az ANDOR adminisztratív VLAN alhálózatának fenn tartott al-interface. / The administrative VLAN subnetworks subinterface of ANDOR.
+encapsulation dot1q 12 native
+ip add 172.16.15.161 255.255.255.240
+ip nat inside
+no sh
+exit
+int gig0/1
+ip nat inside
+zone-member security INSIDE
+no sh
+exit
+router ospf 1
+router-id 7.7.7.7
+Network 172.16.15.0 0.0.0.63 area 2
+Network 172.16.15.64 0.0.0.63 area 2
+Network 172.16.15.128 0.0.0.31 area 2
+Network 172.16.15.160 0.0.0.15 area 2
+Network 80.90.125.36 0.0.0.3 area 0
+passive-interface gig0/1.3
+passive-interface gig0/1.6
+passive-interface gig0/1.9
+passive-interface gig0/1.12
+passive-interface gig0/1
+exit
+ip domain-name Projectenis.com
+enable pass wasp67
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+user Andoradmin password andoradmin34
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+
+class-map type inspect match-any ALLOWED-TRAFFIC
+match protocol dns
+match protocol http
+match protocol https
+exit
+policy-map type inspect INSIDE-POLICY
+class type inspect ALLOWED-TRAFFIC
+inspect
+class class-default
+drop
+exit
+zone-pair security INSIDE-TO-OUTSIDE source INSIDE destination OUTSIDE
+service-policy type inspect INSIDE-POLICY
+exit
+int g0/1
+zone-member security INSIDE
+exit
+int g0/3/0
+zone-member security OUTSIDE
+exit
+do wr
+
+
+
+-x-IBM_CNTRL_RTR0
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
+hostname IBM_CNTRL_RTR0
+int gig0/0/0
+description IBM_CNTRL_MLTLYRS0 felé, az IBM_PRJCTNS területe felé. / Towards IBM_CNTRL_MLTLYRS0, to the area of IBM_PRCJTNS.
+ip add 192.168.30.217 255.255.255.252
+ip nat inside
+no sh
+exit
+int gig0/1/0
+description IBM_CNTRL_RTR1 felé, a Projectenis szerverszobájához. / Towards IBM_CNTRL_RTR1, to the server room of Projectenis.
+ip add 192.168.30.209 255.255.255.252
+ip nat inside
+no sh
+exit
+int se0/3/0
+description Egy tartalék kapcsolat IBM_CNTRL_RTR1 felé, a Projectenis szerverszobájához. / A backup connection to IBM_CNTRL_RTR1, to the server room of Projectenis.
+ip add 192.168.30.213 255.255.255.252
+ip nat inside
+no sh
+exit
+int gig0/2/0
+description Az ISP területe és a Projectenis telephelyei felé. / Towards the site of the ISP and towards the sites of PRJCTNS.
+ip add 80.90.125.33 255.255.255.252
+ip nat outside
+no sh
+exit
+router ospf 1
+router-id 10.10.10.10
+Network 80.90.125.32 0.0.0.3 area 0
+Network 192.168.30.212 0.0.0.3 area 1
+Network 192.168.30.208 0.0.0.3 area 1
+Network 192.168.30.216 0.0.0.3 area 1
+exit
+ip domain-name Projectenis.com
+enable pass leaper33
+user Overlord839 password ibmadmin839
+user IBMadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+
+access-list 1 permit 192.168.30.192 0.0.0.15
+ip nat inside source list 1 interface GigabitEthernet0/2/0 overload
+
+ip nat inside source static tcp 192.168.30.200 80 80.90.125.33 80
+ip nat inside source static tcp 192.168.30.200 443 80.90.125.33 443
+ip nat inside source static tcp 192.168.30.203 53 80.90.125.33 53
+ip nat inside source static udp 192.168.30.203 53 80.90.125.33 53
+ip nat inside source static tcp 192.168.30.204 21 80.90.125.33 21
+ip nat inside source static tcp 192.168.30.204 20 80.90.125.33 20
+ip nat inside source static udp 192.168.30.204 69 80.90.125.33 69
+ip nat inside source static udp 192.168.30.199 67 80.90.125.33 67
+
+do wr
+
+
+
+
+
+
+
+
+
+--------------------ASA-------------
+
+
+
+
+
+
+-x-ASA_KUN
+en
+
+conf t
+hostname ASAKUN
+enable password asaKun3
+username Kunsas password Eagl3
+int gig1/1
+ip address 172.16.20.157 255.255.255.252
+nameif INSIDE
+security-level 100
+no sh
+exit
+int gig1/2
+ip address 80.90.125.42 255.255.255.252
+nameif OUTSIDE
+security-level 0
+no sh
+exit
+aaa authentication ssh console LOCAL
+crypto key generate rsa modulus 1024
+yes
+ssh 172.16.20.132 255.255.255.255 INSIDE
+ssh 80.90.125.33 255.255.255.255 OUTSIDE
+ssh timeout 5
+router ospf 1
+router-id 6.6.6.6
+network 80.90.125.40 255.255.255.252 area 0
+network 172.16.20.156 255.255.255.252 area 3
+exit
+
+access-list IBM-2-KUN extended permit icmp host 192.168.30.197 any
+access-list IBM-2-KUN extended permit icmp host 80.90.125.33 any
+access-list IBM-2-KUN extended permit udp host 80.90.125.33 any
+access-list IBM-2-KUN extended permit tcp host 80.90.125.33 any
+access-list IBM-2-KUN extended permit udp host 192.168.30.197 any
+access-list IBM-2-KUN extended permit tcp host 192.168.30.197 any
+
+access-list KUN-2-ANY extended permit tcp any any eq www
+access-list KUN-2-ANY extended permit tcp any any eq 8080
+access-list KUN-2-ANY extended permit tcp any any eq domain
+access-list KUN-2-ANY extended permit udp any any eq domain
+
+access-list KUN-2-ANY extended permit udp any host 80.90.125.33 eq 67
+access-list KUN-2-ANY extended permit udp any host 80.90.125.33 eq 68
+access-list KUN-2-ANY extended permit udp any host 80.90.125.33 eq 53
+access-list KUN-2-ANY extended permit tcp any host 80.90.125.33 eq 53
+
+
+access-group IBM-2-KUN in interface OUTSIDE 
+access-group KUN-2-ANY in interface INSIDE
+wr mem
+
+
+-x-R_KUN
+en
+conf t
+license boot module c2900 technology-package securityk9
+yes
+do wr
+do reload
+
+en
+conf t
+hostname R_KUN
+router ospf 1 
+router-id 3.3.3.3
+network 172.16.20.0 0.0.0.63 area 3
+network 172.16.20.64 0.0.0.63 area 3
+network 172.16.20.128 0.0.0.15 area 3
+network 172.16.20.144 0.0.0.7 area 3
+network 172.16.20.156 0.0.0.3 area 3
+passive-interface gig0/2.10
+passive-interface gig0/2.20
+passive-interface gig0/2.30
+passive-interface gig0/2.40
+passive-interface gig0/0
+exit
+int gig0/2.10
+description A KUN adminisztratív VLAN alhálózatának fenn tartott al-interface. / The administrative VLAN subnetworks subinterface of KUN.
+encapsulation dot1Q 10 native
+ip address 172.16.20.129 255.255.255.240
+exit
+int gig0/2.20
+description A KUN Linux munkacsapatnak fenn tartott VLAN al-interface. / The subinterface for the VLAN subnetwork of the Linux team in KUN.
+encapsulation dot1Q 20
+ip address 172.16.20.1 255.255.255.192
+ip helper-address 80.90.125.33
+exit
+int gig0/2.30
+description A KUN Windows munkacsapatnak fenn tartott VLAN al-interface. / The subinterface for the VLAN subnetwork of the Windows team in KUN.
+encapsulation dot1Q 30
+ip address 172.16.20.65 255.255.255.192
+ip helper-address 80.90.125.33
+exit
+int gig0/2.40
+description A KUN vezetőségének fenn tartott VLAN al-interface. / The subinterface for the VLAN subnetwork of the Managers in KUN.
+encapsulation dot1Q 40
+ip address 172.16.20.145 255.255.255.248
+ip helper-address 80.90.125.33
+exit
+int gig0/2
+no sh
+exit
+int gig0/1
+description Az ISP területe és a Projectenis telephelyei felé. / Towards the site of the ISP and towards the sites of PRJCTNS.
+ip address 172.16.20.158 255.255.255.252
+no sh
+exit
+user Overlord839 password ibmadmin839
+username KUNadmin999 password 9rutk9skac9
+user Rocket375 password projectenis375
+user Rifle622 password projectenis622
+enable password enpass55
+ip domain-name Projectenis.com
+crypto key generate rsa
+1024
+
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 120
+line vty 0 15
+transport input ssh
+login local
+exit
+banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do write
