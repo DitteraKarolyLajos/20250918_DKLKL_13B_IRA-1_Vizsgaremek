@@ -69,12 +69,39 @@ description Towards the site of the ISP and towards the sites of PRJCTNS.
 ip add 80.90.125.33 255.255.255.252
 no sh
 exit
+interface Tunnel0
+description GRE Tunnel for the Site-To-Site VPN between IBM Central and Kun Sites.
+ip address 192.168.33.2 255.255.255.252
+tunnel source gig0/3/0
+tunnel destination 80.90.125.42
+tunnel mode gre ip
+no sh
+exit
+crypto isakmp policy 10
+encr aes 256
+hash sha
+lifetime 43200
+authentication pre-share
+group 5
+exit
+crypto isakmp key vpnisa85esfel address 80.90.125.42
+crypto ipsec transform-set TSET esp-aes esp-sha-hmac
+access-list 110 permit gre host 80.90.125.33 host 80.90.125.42
+crypto map CMAP 10 ipsec-isakmp
+set peer 80.90.125.42
+set transform-set TSET
+match address 110
+exit
+interface GigabitEthernet0/3/0
+crypto map CMAP
+exit
+ip route 0.0.0.0 0.0.0.0 80.90.125.34
 router ospf 1
 router-id 10.10.10.10
-Network 80.90.125.32 0.0.0.3 area 0
-Network 192.168.30.212 0.0.0.3 area 1
-Network 192.168.30.208 0.0.0.3 area 1
-Network 192.168.30.216 0.0.0.3 area 1
+network 192.168.33.0 0.0.0.3 area 0
+network 192.168.30.212 0.0.0.3 area 1
+network 192.168.30.208 0.0.0.3 area 1
+network 192.168.30.216 0.0.0.3 area 1
 exit
 ip domain-name Projectenis.com
 enable pass leaper33
@@ -93,133 +120,8 @@ transport input ssh
 login local
 exit
 banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
+do w
 
-int tunnel 0
-description GRE Tunnel for the Site-To-Site VPN between IBM Central and Kun Sites.
-ip add 192.168.33.2 255.255.255.252
-no sh
-tunnel source gig0/3/0
-tunnel destination 80.90.125.42
-exit
-
-access-list 100 deny ip 192.168.30.0 0.0.0.63 172.16.20.0 0.0.0.63
-access-list 100 deny ip 192.168.30.0 0.0.0.63 172.16.20.64 0.0.0.63
-access-list 100 deny ip 192.168.30.0 0.0.0.63 172.16.20.128 0.0.0.15
-access-list 100 deny ip 192.168.30.0 0.0.0.63 172.16.20.144 0.0.0.7
-
-access-list 100 deny ip 192.168.30.64 0.0.0.63 172.16.20.0 0.0.0.63
-access-list 100 deny ip 192.168.30.64 0.0.0.63 172.16.20.64 0.0.0.63
-access-list 100 deny ip 192.168.30.64 0.0.0.63 172.16.20.128 0.0.0.15
-access-list 100 deny ip 192.168.30.64 0.0.0.63 172.16.20.144 0.0.0.7
-
-access-list 100 deny ip 192.168.30.128 0.0.0.31 172.16.20.0 0.0.0.63
-access-list 100 deny ip 192.168.30.128 0.0.0.31 172.16.20.64 0.0.0.63
-access-list 100 deny ip 192.168.30.128 0.0.0.31 172.16.20.128 0.0.0.15
-access-list 100 deny ip 192.168.30.128 0.0.0.31 172.16.20.144 0.0.0.7
-
-access-list 100 deny ip 192.168.30.160 0.0.0.31 172.16.20.0 0.0.0.63
-access-list 100 deny ip 192.168.30.160 0.0.0.31 172.16.20.64 0.0.0.63
-access-list 100 deny ip 192.168.30.160 0.0.0.31 172.16.20.128 0.0.0.15
-access-list 100 deny ip 192.168.30.160 0.0.0.31 172.16.20.144 0.0.0.7
-
-access-list 100 deny ip 192.168.30.192 0.0.0.15 172.16.20.0 0.0.0.63
-access-list 100 deny ip 192.168.30.192 0.0.0.15 172.16.20.64 0.0.0.63
-access-list 100 deny ip 192.168.30.192 0.0.0.15 172.16.20.128 0.0.0.15
-access-list 100 deny ip 192.168.30.192 0.0.0.15 172.16.20.144 0.0.0.7
-
-access-list 100 deny ip 192.168.30.208 0.0.0.3 172.16.20.0 0.0.0.63
-access-list 100 deny ip 192.168.30.208 0.0.0.3 172.16.20.64 0.0.0.63
-access-list 100 deny ip 192.168.30.208 0.0.0.3 172.16.20.128 0.0.0.15
-access-list 100 deny ip 192.168.30.208 0.0.0.3 172.16.20.144 0.0.0.7
-
-access-list 100 deny ip 192.168.30.212 0.0.0.3 172.16.20.0 0.0.0.63
-access-list 100 deny ip 192.168.30.212 0.0.0.3 172.16.20.64 0.0.0.63
-access-list 100 deny ip 192.168.30.212 0.0.0.3 172.16.20.128 0.0.0.15
-access-list 100 deny ip 192.168.30.212 0.0.0.3 172.16.20.144 0.0.0.7
-
-access-list 100 deny ip 192.168.30.216 0.0.0.3 172.16.20.0 0.0.0.63
-access-list 100 deny ip 192.168.30.216 0.0.0.3 172.16.20.64 0.0.0.63
-access-list 100 deny ip 192.168.30.216 0.0.0.3 172.16.20.128 0.0.0.15
-access-list 100 deny ip 192.168.30.216 0.0.0.3 172.16.20.144 0.0.0.7
-
-access-list 100 permit ip 192.168.30.192 0.0.0.15 any
-
-ip nat inside source list 100 int gig0/3/0 overload
-int gig0/1/0
-ip nat inside
-exit
-int gig0/2/0
-ip nat inside
-exit
-int se0/0/0
-ip nat inside
-exit
-int gig0/3/0
-ip nat outside
-
-ip route 172.16.20.0 255.255.255.192 192.168.33.1
-ip route 172.16.20.64 255.255.255.192 192.168.33.1
-ip route 172.16.20.128 255.255.255.240 192.168.33.1
-ip route 172.16.20.144 255.255.255.248 192.168.33.1
-
-crypto isakmp policy 10
-encryption aes 256
-hash sha
-lifetime 43200
-authentication pre-share
-group 5
-exit
-crypto isakmp key vpnisa85esfel address 80.90.125.42
-crypto ipsec transform-set GRE-IPSEC esp-aes esp-sha-hmac
-access-list 110 permit ip 192.168.30.0 0.0.0.63 172.16.20.0 0.0.0.63
-access-list 110 permit ip 192.168.30.0 0.0.0.63 172.16.20.64 0.0.0.63
-access-list 110 permit ip 192.168.30.0 0.0.0.63 172.16.20.128 0.0.0.15
-access-list 110 permit ip 192.168.30.0 0.0.0.63 172.16.20.144 0.0.0.7
-
-access-list 110 permit ip 192.168.30.64 0.0.0.63 172.16.20.0 0.0.0.63
-access-list 110 permit ip 192.168.30.64 0.0.0.63 172.16.20.64 0.0.0.63
-access-list 110 permit ip 192.168.30.64 0.0.0.63 172.16.20.128 0.0.0.15
-access-list 110 permit ip 192.168.30.64 0.0.0.63 172.16.20.144 0.0.0.7
-
-access-list 110 permit ip 192.168.30.128 0.0.0.31 172.16.20.0 0.0.0.63
-access-list 110 permit ip 192.168.30.128 0.0.0.31 172.16.20.64 0.0.0.63
-access-list 110 permit ip 192.168.30.128 0.0.0.31 172.16.20.128 0.0.0.15
-access-list 110 permit ip 192.168.30.128 0.0.0.31 172.16.20.144 0.0.0.7
-
-access-list 110 permit ip 192.168.30.160 0.0.0.31 172.16.20.0 0.0.0.63
-access-list 110 permit ip 192.168.30.160 0.0.0.31 172.16.20.64 0.0.0.63
-access-list 110 permit ip 192.168.30.160 0.0.0.31 172.16.20.128 0.0.0.15
-access-list 110 permit ip 192.168.30.160 0.0.0.31 172.16.20.144 0.0.0.7
-
-access-list 110 permit ip 192.168.30.192 0.0.0.15 172.16.20.0 0.0.0.63
-access-list 110 permit ip 192.168.30.192 0.0.0.15 172.16.20.64 0.0.0.63
-access-list 110 permit ip 192.168.30.192 0.0.0.15 172.16.20.128 0.0.0.15
-access-list 110 permit ip 192.168.30.192 0.0.0.15 172.16.20.144 0.0.0.7
-
-access-list 110 permit ip 192.168.30.208 0.0.0.3 172.16.20.0 0.0.0.63
-access-list 110 permit ip 192.168.30.208 0.0.0.3 172.16.20.64 0.0.0.63
-access-list 110 permit ip 192.168.30.208 0.0.0.3 172.16.20.128 0.0.0.15
-access-list 110 permit ip 192.168.30.208 0.0.0.3 172.16.20.144 0.0.0.7
-
-access-list 110 permit ip 192.168.30.212 0.0.0.3 172.16.20.0 0.0.0.63
-access-list 110 permit ip 192.168.30.212 0.0.0.3 172.16.20.64 0.0.0.63
-access-list 110 permit ip 192.168.30.212 0.0.0.3 172.16.20.128 0.0.0.15
-access-list 110 permit ip 192.168.30.212 0.0.0.3 172.16.20.144 0.0.0.7
-
-access-list 110 permit ip 192.168.30.216 0.0.0.3 172.16.20.0 0.0.0.63
-access-list 110 permit ip 192.168.30.216 0.0.0.3 172.16.20.64 0.0.0.63
-access-list 110 permit ip 192.168.30.216 0.0.0.3 172.16.20.128 0.0.0.15
-access-list 110 permit ip 192.168.30.216 0.0.0.3 172.16.20.144 0.0.0.7
-crypto map VPN-MAP 10 ipsec-isakmp
-description VPN to IBM_CNTRL
-set peer 80.90.125.42
-set transform-set GRE-IPSEC
-match address 110
-exit
-int gig0/3/0
-crypto map VPN-MAP
-exit
-do wr
 
 -x-IBM_CNTRL_RTR1
 en
@@ -496,19 +398,6 @@ do reload
 en
 conf t
 hostname R_KUN
-router ospf 1 
-router-id 3.3.3.3
-network 80.90.125.40 0.0.0.3 area 0
-network 172.16.20.0 0.0.0.63 area 3
-network 172.16.20.64 0.0.0.63 area 3
-network 172.16.20.128 0.0.0.15 area 3
-network 172.16.20.144 0.0.0.7 area 3
-passive-interface gig0/1.10
-passive-interface gig0/1.20
-passive-interface gig0/1.30
-passive-interface gig0/1.40
-passive-interface gig0/1
-exit
 int gig0/1.10
 description The administrative VLAN subnetworks subinterface of KUN.
 encapsulation dot1Q 10 native
@@ -557,121 +446,47 @@ transport input ssh
 login local
 exit
 banner motd %This device is only accesable by registered authorized personnel within work hours. Accessing the device unregurarly, or any tampering that damages the owners and the comapny, will result in legal action being taken.%
-int tunnel 0
-ip add 192.168.33.1 255.255.255.252
-no sh
+interface Tunnel0
+description GRE tunnel to IBM
+ip address 192.168.33.1 255.255.255.252
 tunnel source gig0/3/0
 tunnel destination 80.90.125.33
+tunnel mode gre ip
+no sh
 exit
-
-access-list 100 deny ip 172.16.20.0 0.0.0.63 192.168.30.0 0.0.0.63
-access-list 100 deny ip 172.16.20.0 0.0.0.63 192.168.30.64 0.0.0.63
-access-list 100 deny ip 172.16.20.0 0.0.0.63 192.168.30.128 0.0.0.31
-access-list 100 deny ip 172.16.20.0 0.0.0.63 192.168.30.160 0.0.0.31
-access-list 100 deny ip 172.16.20.0 0.0.0.63 192.168.30.192 0.0.0.15
-access-list 100 deny ip 172.16.20.0 0.0.0.63 192.168.30.208 0.0.0.3
-access-list 100 deny ip 172.16.20.0 0.0.0.63 192.168.30.212 0.0.0.3
-access-list 100 deny ip 172.16.20.0 0.0.0.63 192.168.30.216 0.0.0.3
-
-access-list 100 deny ip 172.16.20.64 0.0.0.63 192.168.30.0 0.0.0.63
-access-list 100 deny ip 172.16.20.64 0.0.0.63 192.168.30.64 0.0.0.63
-access-list 100 deny ip 172.16.20.64 0.0.0.63 192.168.30.128 0.0.0.31
-access-list 100 deny ip 172.16.20.64 0.0.0.63 192.168.30.160 0.0.0.31
-access-list 100 deny ip 172.16.20.64 0.0.0.63 192.168.30.192 0.0.0.15
-access-list 100 deny ip 172.16.20.64 0.0.0.63 192.168.30.208 0.0.0.3
-access-list 100 deny ip 172.16.20.64 0.0.0.63 192.168.30.212 0.0.0.3
-access-list 100 deny ip 172.16.20.64 0.0.0.63 192.168.30.216 0.0.0.3
-
-access-list 100 deny ip 172.16.20.128 0.0.0.15 192.168.30.0 0.0.0.63
-access-list 100 deny ip 172.16.20.128 0.0.0.15 192.168.30.64 0.0.0.63
-access-list 100 deny ip 172.16.20.128 0.0.0.15 192.168.30.128 0.0.0.31
-access-list 100 deny ip 172.16.20.128 0.0.0.15 192.168.30.160 0.0.0.31
-access-list 100 deny ip 172.16.20.128 0.0.0.15 192.168.30.192 0.0.0.15
-access-list 100 deny ip 172.16.20.128 0.0.0.15 192.168.30.208 0.0.0.3
-access-list 100 deny ip 172.16.20.128 0.0.0.15 192.168.30.212 0.0.0.3
-access-list 100 deny ip 172.16.20.128 0.0.0.15 192.168.30.216 0.0.0.3
-
-access-list 100 deny ip 172.16.20.144 0.0.0.7 192.168.30.0 0.0.0.63
-access-list 100 deny ip 172.16.20.144 0.0.0.7 192.168.30.64 0.0.0.63
-access-list 100 deny ip 172.16.20.144 0.0.0.7 192.168.30.128 0.0.0.31
-access-list 100 deny ip 172.16.20.144 0.0.0.7 192.168.30.160 0.0.0.31
-access-list 100 deny ip 172.16.20.144 0.0.0.7 192.168.30.192 0.0.0.15
-access-list 100 deny ip 172.16.20.144 0.0.0.7 192.168.30.208 0.0.0.3
-access-list 100 deny ip 172.16.20.144 0.0.0.7 192.168.30.212 0.0.0.3
-access-list 100 deny ip 172.16.20.144 0.0.0.7 192.168.30.216 0.0.0.3
-
-access-list 100 permit ip 172.16.20.0 0.0.0.63 any
-access-list 100 permit ip 172.16.20.64 0.0.0.63 any
-access-list 100 permit ip 172.16.20.128 0.0.0.15 any
-access-list 100 permit ip 172.16.20.144 0.0.0.7 any
-
-ip nat inside source list 100 int gig0/3/0 overload
-int gig0/1
-ip nat inside
-exit
-int gig0/3/0
-ip nat outside
-exit
-ip route 192.168.30.192 255.255.255.240 192.168.33.2
-ip route 192.168.30.0 255.255.255.192 192.168.33.2
-ip route 192.168.30.64 255.255.255.192 192.168.33.2
-ip route 192.168.30.128 255.255.255.224 192.168.33.2
-ip route 192.168.30.160 255.255.255.224 192.168.33.2
-ip route 192.168.30.192 255.255.255.240 192.168.33.2
 crypto isakmp policy 10
-encryption aes 256
+encr aes 256
 hash sha
 lifetime 43200
 authentication pre-share
 group 5
 exit
 crypto isakmp key vpnisa85esfel address 80.90.125.33
-crypto ipsec transform-set GRE-IPSEC esp-aes esp-sha-hmac
-access-list 110 permit ip 172.16.20.0 0.0.0.63 192.168.30.0 0.0.0.63
-access-list 110 permit ip 172.16.20.0 0.0.0.63 192.168.30.64 0.0.0.63
-access-list 110 permit ip 172.16.20.0 0.0.0.63 192.168.30.128 0.0.0.31
-access-list 110 permit ip 172.16.20.0 0.0.0.63 192.168.30.160 0.0.0.31
-access-list 110 permit ip 172.16.20.0 0.0.0.63 192.168.30.192 0.0.0.15
-access-list 110 permit ip 172.16.20.0 0.0.0.63 192.168.30.208 0.0.0.3
-access-list 110 permit ip 172.16.20.0 0.0.0.63 192.168.30.212 0.0.0.3
-access-list 110 permit ip 172.16.20.0 0.0.0.63 192.168.30.216 0.0.0.3
-
-access-list 110 permit ip 172.16.20.64 0.0.0.63 192.168.30.0 0.0.0.63
-access-list 110 permit ip 172.16.20.64 0.0.0.63 192.168.30.64 0.0.0.63
-access-list 110 permit ip 172.16.20.64 0.0.0.63 192.168.30.128 0.0.0.31
-access-list 110 permit ip 172.16.20.64 0.0.0.63 192.168.30.160 0.0.0.31
-access-list 110 permit ip 172.16.20.64 0.0.0.63 192.168.30.192 0.0.0.15
-access-list 110 permit ip 172.16.20.64 0.0.0.63 192.168.30.208 0.0.0.3
-access-list 110 permit ip 172.16.20.64 0.0.0.63 192.168.30.212 0.0.0.3
-access-list 110 permit ip 172.16.20.64 0.0.0.63 192.168.30.216 0.0.0.3
-
-access-list 110 permit ip 172.16.20.128 0.0.0.15 192.168.30.0 0.0.0.63
-access-list 110 permit ip 172.16.20.128 0.0.0.15 192.168.30.64 0.0.0.63
-access-list 110 permit ip 172.16.20.128 0.0.0.15 192.168.30.128 0.0.0.31
-access-list 110 permit ip 172.16.20.128 0.0.0.15 192.168.30.160 0.0.0.31
-access-list 110 permit ip 172.16.20.128 0.0.0.15 192.168.30.192 0.0.0.15
-access-list 110 permit ip 172.16.20.128 0.0.0.15 192.168.30.208 0.0.0.3
-access-list 110 permit ip 172.16.20.128 0.0.0.15 192.168.30.212 0.0.0.3
-access-list 110 permit ip 172.16.20.128 0.0.0.15 192.168.30.216 0.0.0.3
-
-access-list 110 permit ip 172.16.20.144 0.0.0.7 192.168.30.0 0.0.0.63
-access-list 110 permit ip 172.16.20.144 0.0.0.7 192.168.30.64 0.0.0.63
-access-list 110 permit ip 172.16.20.144 0.0.0.7 192.168.30.128 0.0.0.31
-access-list 110 permit ip 172.16.20.144 0.0.0.7 192.168.30.160 0.0.0.31
-access-list 110 permit ip 172.16.20.144 0.0.0.7 192.168.30.192 0.0.0.15
-access-list 110 permit ip 172.16.20.144 0.0.0.7 192.168.30.208 0.0.0.3
-access-list 110 permit ip 172.16.20.144 0.0.0.7 192.168.30.212 0.0.0.3
-access-list 110 permit ip 172.16.20.144 0.0.0.7 192.168.30.216 0.0.0.3
-crypto map VPN-MAP 10 ipsec-isakmp
-description VPN to IBM_CNTRL
+crypto ipsec transform-set TSET esp-aes esp-sha-hmac
+access-list 110 permit gre host 80.90.125.42 host 80.90.125.33
+crypto map CMAP 10 ipsec-isakmp
 set peer 80.90.125.33
-set transform-set GRE-IPSEC
+set transform-set TSET
 match address 110
 exit
-int gig0/3/0
-crypto map VPN-MAP
+interface GigabitEthernet0/3/0
+crypto map CMAP
 exit
-do write
+ip route 0.0.0.0 0.0.0.0 80.90.125.41
+router ospf 1 
+router-id 3.3.3.3
+network 192.168.33.0 0.0.0.3 area 0
+network 172.16.20.0 0.0.0.63 area 3
+network 172.16.20.64 0.0.0.63 area 3
+network 172.16.20.128 0.0.0.15 area 3
+network 172.16.20.144 0.0.0.7 area 3
+passive-interface gig0/1.10
+passive-interface gig0/1.20
+passive-interface gig0/1.30
+passive-interface gig0/1.40
+passive-interface gig0/1
+exit
+do w
 
 -x-SW_KUN_1
 en
@@ -891,92 +706,3 @@ banner motd %This device is only accesable by registered authorized personnel wi
 do write
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-RCNTRL
-ip route 0.0.0.0 0.0.0.0 80.90.125.34
-int tunnel0
-description GRE Tunnel for the Site-To-Site VPN between IBM Central and Kun Sites.
-ip address 192.168.33.2 255.255.255.252
-tunnel soruce gig0/3/0
-tunnel destination 80.90.125.42
-no sh
-exit
-access-list 100 permit ip host 192.168.30.172 any
-access-list 100 deny ip 192.168.30.0 0.0.0.255 172.16.20.0 0.0.0.255
-access-list 100 permit ip 192.168.30.0 0.0.0.255 any
-ip nat inside source list 100 int g0/3/0 overload
-int range gig0/1/0, gig0/2/0, se0/0/0
-ip nat inside
-exit
-int gig0/3/0
-ip nat Outside
-exit
-crypto isakmp policy 10
-encryption aes
-hash sha
-authentication pre-share
-group 5
-lifetime 86400
-exit
-crypto isakmp key prjctpns071 address 80.90.125.42
-access-list 110 permit ip 192.168.30.0 0.0.0.255 172.16.20.0 0.0.0.255
-crypto map VPN-MAP 10 ipsec-isakmp
-set peer 80.90.125.42
-set transform-set GRE-IPSEC
-match address 110
-exit
-crypto ipsec transform-set GRE-IPSEC esp-aes esp-sha-hmac
-int gig0/3/0
-crypto VPN-MAP
-
-
-
-RKUN
-ip route 0.0.0.0 0.0.0.0 80.90.125.41
-int tunnel0
-ip address 192.168.33.1 255.255.255.252
-tunnel source gig0/3/0
-tunnel destination 80.90.125.33
-no sh
-exit
-access-list 100 permit ip host 172.16.20.132 any
-access-list 100 deny ip 172.16.20.0 0.0.0.255 192.168.30.0 0.0.0.255
-access-list 100 permit ip 192.168.1.0 0.0.0.255 any
-ip nat inside source list 100 int g0/3/0 overload
-int gig0/1
-ip nat inside
-exit
-int gig0/3/0
-ip nat Outside
-exit
-crypto isakmp policy 10 
-encryption aes
-hash sha
-authentication pre-share
-group 5
-lifetime 86400
-exit
-crypto isakmp key prjctpns071 address 80.90.125.33
-crypto ipsec transform-set GRE-IPSEC esp-aes esp-sha-hmac
-access-list 110 permit 172.16.20.0 0.0.0.255 192.168.30.0 0.0.0.255
-crypto map VPN-MAP 10 ipsec-isakmp
-set peer 80.90.125.33
-set transform-set GRE-IPSEC
-match address 110
-exit
-int g0/3/0
-crypto map VPN-MAP
