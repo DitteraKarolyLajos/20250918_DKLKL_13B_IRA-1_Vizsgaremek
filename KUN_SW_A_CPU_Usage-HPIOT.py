@@ -15,7 +15,7 @@ def run_cpu_check():
 
     CPU_THRESHOLD = 80
     LOG_FILE = "nexus_cpu_log.csv"
-    WEBHOOK_URL = "https://discord.com/api/webhooks/1499783179714957563/x-UGmuzyWFQgfVW2uRY67XiqVqv2ASxPzjXeidpzSdVgmYhnm-ssWurKlzRGcMh5AS28"
+    WEBHOOK_URL = "[DISCORD_WEBHOOK_LINK]"
 
     URL = f"https://{HOST}:{PORT}/ins"
 
